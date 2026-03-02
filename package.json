@@ -1,0 +1,26 @@
+{
+  "name": "erp-lite",
+  "version": "1.0.0",
+  "description": "ERP Lite - Enterprise Micro-Frontend Platform",
+  "private": true,
+  "scripts": {
+    "dev:all": "pnpm --filter \"./packages/*\" --parallel dev",
+    "build:all": "pnpm --filter \"./packages/*\" build",
+    "lint:all": "pnpm --filter \"./packages/*\" --parallel lint",
+    "lint:fix": "pnpm --filter \"./packages/*\" --parallel lint:fix",
+    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,scss,md}\"",
+    "prepare": "husky install"
+  },
+  "devDependencies": {
+    "prettier": "^3.2.5",
+    "husky": "^8.0.3",
+    "lint-staged": "^15.2.0",
+    "@commitlint/cli": "^17.8.0",
+    "@commitlint/config-conventional": "^17.8.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "packageManager": "pnpm@8.15.0"
+}

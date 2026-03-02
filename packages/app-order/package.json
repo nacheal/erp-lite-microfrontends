@@ -1,0 +1,46 @@
+{
+  "name": "app-order",
+  "version": "1.0.0",
+  "description": "ERP Lite - Order Management Sub-app",
+  "private": true,
+  "scripts": {
+    "dev": "webpack serve --mode development",
+    "build": "webpack --mode production",
+    "lint": "eslint src --ext .ts,.tsx",
+    "lint:fix": "eslint src --ext .ts,.tsx --fix"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.21.1",
+    "antd": "^5.12.5",
+    "axios": "^1.6.5",
+    "zustand": "^4.4.7",
+    "echarts": "^5.4.3",
+    "echarts-for-react": "^3.0.2",
+    "@erp-lite/types": "workspace:*",
+    "@erp-lite/utils": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.47",
+    "@types/react-dom": "^18.2.18",
+    "@types/node": "^20.10.6",
+    "typescript": "^5.3.3",
+    "webpack": "^5.89.0",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^4.15.1",
+    "html-webpack-plugin": "^5.6.0",
+    "css-loader": "^6.9.0",
+    "style-loader": "^3.3.4",
+    "ts-loader": "^9.5.1",
+    "babel-loader": "^9.1.3",
+    "@babel/core": "^7.23.7",
+    "@babel/preset-react": "^7.23.3",
+    "@babel/preset-typescript": "^7.23.3",
+    "@babel/preset-env": "^7.23.7",
+    "postcss": "^8.4.33",
+    "postcss-loader": "^7.3.4",
+    "autoprefixer": "^10.4.16",
+    "mini-css-extract-plugin": "^2.7.7"
+  }
+}

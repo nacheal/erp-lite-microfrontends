@@ -4,7 +4,13 @@
       "Bash(pnpm install:*)",
       "Bash(pnpm run dev:*)",
       "Bash(lsof:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(xargs:*)",
+      "Bash(pkill:*)",
+      "Bash(npx kill-port:*)",
+      "Bash(curl:*)"
     ]
   }
 }

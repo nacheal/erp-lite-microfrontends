@@ -10,7 +10,10 @@
       "Bash(xargs:*)",
       "Bash(pkill:*)",
       "Bash(npx kill-port:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(pnpm run mock:dev:*)",
+      "Bash(cat:*)",
+      "Bash(pnpm run dev:all:*)"
     ]
   }
 }

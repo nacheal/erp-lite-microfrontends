@@ -10,7 +10,7 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'js/[name].[contenthash:8].js',
-    publicPath: isDev ? '/' : 'https://erp.company.com/',
+    publicPath: 'auto',
     clean: true,
   },
 

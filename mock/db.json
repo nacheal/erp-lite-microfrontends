@@ -1,0 +1,180 @@
+{
+  "auth": {
+    "login": "/auth/login"
+  },
+  "users": [
+    {
+      "id": "1",
+      "name": "张三",
+      "phone": "13800138000",
+      "email": "zhangsan@example.com",
+      "role": "admin",
+      "status": "active",
+      "avatar": "https://api.dicebear.com/7.x/avatars/svg?seed=Felix",
+      "createTime": "2024-01-01",
+      "department": "技术部"
+    },
+    {
+      "id": "2",
+      "name": "李四",
+      "phone": "13800138001",
+      "email": "lisi@example.com",
+      "role": "user",
+      "status": "active",
+      "avatar": "https://api.dicebear.com/7.x/avatars/svg?seed=Aneka",
+      "createTime": "2024-01-05",
+      "department": "销售部"
+    },
+    {
+      "id": "3",
+      "name": "王五",
+      "phone": "13800138002",
+      "email": "wangwu@example.com",
+      "role": "user",
+      "status": "inactive",
+      "avatar": "https://api.dicebear.com/7.x/avatars/svg?seed=Bailey",
+      "createTime": "2024-01-10",
+      "department": "运营部"
+    }
+  ],
+  "products": [
+    {
+      "id": "1",
+      "name": "笔记本电脑 Pro 13",
+      "category": "电子产品",
+      "price": 6999,
+      "stock": 100,
+      "status": "active",
+      "description": "高性能商务笔记本，16G内存，512GB SSD"
+    },
+    {
+      "id": "2",
+      "name": "无线鼠标",
+      "category": "配件",
+      "price": 199,
+      "stock": 500,
+      "status": "active",
+      "description": "人体工学设计，静音按键"
+    },
+    {
+      "id": "3",
+      "name": "机械键盘",
+      "category": "配件",
+      "price": 299,
+      "stock": 200,
+      "status": "inactive",
+      "description": "104键机械键盘，红轴设计"
+    },
+    {
+      "id": "4",
+      "name": "显示器",
+      "category": "配件",
+      "price": 1299,
+      "stock": 50,
+      "status": "active",
+      "description": "27英寸 4K 显示器"
+    }
+  ],
+  "orders": [
+    {
+      "id": "ORD-202401001",
+      "orderNo": "ORD-202401001",
+      "userId": "1",
+      "userName": "张三",
+      "status": "pending",
+      "totalAmount": 6999,
+      "items": [
+        {
+          "productId": "1",
+          "productName": "笔记本电脑 Pro 13",
+          "price": 6999,
+          "quantity": 1
+        }
+      ],
+      "createTime": "2024-02-01T10:30:00",
+      "updateTime": "2024-02-01T10:35:00"
+    },
+    {
+      "id": "ORD-202401002",
+      "orderNo": "ORD-202401002",
+      "userId": "1",
+      "userName": "张三",
+      "status": "completed",
+      "totalAmount": 1998,
+      "items": [
+        {
+          "productId": "2",
+          "productName": "无线鼠标",
+          "price": 199,
+          "quantity": 10
+        }
+      ],
+      "createTime": "2024-01-28T14:20:00",
+      "updateTime": "2024-01-29T09:15:00"
+    },
+    {
+      "id": "ORD-202401003",
+      "orderNo": "ORD-202401003",
+      "userId": "2",
+      "userName": "李四",
+      "status": "shipped",
+      "totalAmount": 899,
+      "items": [
+        {
+          "productId": "1",
+          "productName": "笔记本电脑 Pro 13",
+          "price": 6999,
+          "quantity": 1
+        }
+      ],
+      "createTime": "2024-02-01T08:00:00",
+      "updateTime": "2024-02-02T14:00:00"
+    }
+  ],
+  "microApps": [
+    {
+      "name": "app-user",
+      "entry": "//localhost:3001",
+      "activeRule": "/user",
+      "enabled": true,
+      "version": "1.0.0"
+    },
+    {
+      "name": "app-product",
+      "entry": "//localhost:3002",
+      "activeRule": "/product",
+      "enabled": true,
+      "version": "1.0.0"
+    },
+    {
+      "name": "app-order",
+      "entry": "//localhost:3003",
+      "activeRule": "/order",
+      "enabled": true,
+      "version": "1.0.0"
+    },
+    {
+      "name": "app-dashboard",
+      "entry": "//localhost:3004",
+      "activeRule": "/dashboard",
+      "enabled": true,
+      "version": "1.0.0"
+    }
+  ],
+  "dashboardStats": {
+    "gmv": 1250000,
+    "orderCount": 1523,
+    "userCount": 150,
+    "conversionRate": 3.5
+  },
+  "permissions": [
+    "user:view",
+    "user:edit",
+    "user:delete",
+    "product:view",
+    "product:edit",
+    "product:delete",
+    "order:view",
+    "order:export"
+  ]
+}

@@ -1,12 +1,8 @@
 import React from 'react';
+import MainLayout from './components/MainLayout';
 
 const App: React.FC = () => {
-  return (
-    <div className="shell-app">
-      <h1>ERP Lite - Shell App</h1>
-      <p>主应用容器，用于加载和管理子应用</p>
-    </div>
-  );
+  return <MainLayout />;
 };
 
 export default App;

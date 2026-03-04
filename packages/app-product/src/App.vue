@@ -1,16 +1,31 @@
 <template>
   <div class="app-product">
-    <h1>Product Management App</h1>
-    <p>商品管理子应用</p>
+    <ProductList />
   </div>
 </template>
 
 <script setup lang="ts">
-// Vue 3 Composition API
+import { ref, onMounted, onUnmounted } from 'vue';
+import ProductList from './pages/ProductList.vue';
+
+// 监听子应用内部路由变化
+let unsubscribe: (() => void) | null = null;
+
+onMounted(() => {
+  // 如果需要添加子路由功能，可以在这里实现
+  // 目前先只展示商品列表
+});
+
+onUnmounted(() => {
+  if (unsubscribe) {
+    unsubscribe();
+  }
+});
 </script>
 
 <style scoped>
 .app-product {
-  padding: 20px;
+  width: 100%;
+  height: 100%;
 }
 </style>

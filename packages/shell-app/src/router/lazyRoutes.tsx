@@ -9,7 +9,7 @@ export function Dashboard() {
   return (
     <div className="page-dashboard" style={{ height: '100%' }}>
       {/* qiankun 子应用挂载容器 */}
-      <div id="subapp-viewport" style={{ height: '100%' }}></div>
+      <div id="subapp-dashboard" style={{ height: '100%' }}></div>
     </div>
   );
 }
@@ -23,7 +23,7 @@ export function User() {
   return (
     <div className="page-user" style={{ height: '100%' }}>
       {/* qiankun 子应用挂载容器 */}
-      <div id="subapp-viewport" style={{ height: '100%' }}></div>
+      <div id="subapp-user" style={{ height: '100%' }}></div>
     </div>
   );
 }
@@ -37,7 +37,7 @@ export function Product() {
   return (
     <div className="page-product" style={{ height: '100%' }}>
       {/* qiankun 子应用挂载容器 */}
-      <div id="subapp-viewport" style={{ height: '100%' }}></div>
+      <div id="subapp-product" style={{ height: '100%' }}></div>
     </div>
   );
 }
@@ -51,7 +51,7 @@ export function Order() {
   return (
     <div className="page-order" style={{ height: '100%' }}>
       {/* qiankun 子应用挂载容器 */}
-      <div id="subapp-viewport" style={{ height: '100%' }}></div>
+      <div id="subapp-order" style={{ height: '100%' }}></div>
     </div>
   );
 }

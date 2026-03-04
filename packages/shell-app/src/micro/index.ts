@@ -21,25 +21,25 @@ const microApps: MicroApp[] = [
   {
     name: 'app-user',
     entry: '//localhost:3001',
-    container: '#subapp-viewport',
+    container: '#subapp-user',
     activeRule: (location: Location) => location.pathname.startsWith('/user'),
   },
   {
     name: 'app-product',
     entry: '//localhost:3002',
-    container: '#subapp-viewport',
+    container: '#subapp-product',
     activeRule: (location: Location) => location.pathname.startsWith('/product'),
   },
   {
     name: 'app-order',
     entry: '//localhost:3003',
-    container: '#subapp-viewport',
+    container: '#subapp-order',
     activeRule: (location: Location) => location.pathname.startsWith('/order'),
   },
   {
     name: 'app-dashboard',
     entry: '//localhost:3004',
-    container: '#subapp-viewport',
+    container: '#subapp-dashboard',
     activeRule: (location: Location) => location.pathname.startsWith('/dashboard'),
   },
 ];

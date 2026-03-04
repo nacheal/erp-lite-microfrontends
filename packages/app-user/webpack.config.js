@@ -6,17 +6,14 @@ const packageName = 'app-user';
 const isDev = process.env.NODE_ENV === 'development';
 
 module.exports = {
-  entry: {
-    main: './src/main.tsx',
-    index: './src/index.ts', // 微前端入口
-  },
+  entry: './src/index.tsx',
 
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: 'js/[name].[contenthash:8].js',
+    filename: 'index.js',
     publicPath: 'auto',
     clean: true,
-    library: `${packageName}-[name]`,
+    library: `${packageName}`,
     libraryTarget: 'umd',
     chunkLoadingGlobal: `webpackJsonp_${packageName}`,
   },
@@ -37,8 +34,8 @@ module.exports = {
           loader: 'babel-loader',
           options: {
             presets: [
-              '@babel/preset-env',
-              '@babel/preset-react',
+              ['@babel/preset-env', { modules: false }],
+              ['@babel/preset-react', { runtime: 'automatic' }],
               '@babel/preset-typescript',
             ],
           },
@@ -52,7 +49,7 @@ module.exports = {
             loader: 'css-loader',
             options: {
               modules: {
-                localIdentName: isDev ? 'usr-[name]__[local]--[hash:base64:5]' : 'usr-[hash:base64:5]',
+                localIdentName: isDev ? 'usr-[name]__[local]--[hash:base64:5]' : 'usr-[name]__[hash:base64:5]',
               },
             },
           },

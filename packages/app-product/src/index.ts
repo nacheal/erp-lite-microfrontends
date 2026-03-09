@@ -3,6 +3,8 @@ import { createApp } from 'vue';
 import App from './App.vue';
 import { renderWithQiankun } from 'vite-plugin-qiankun/dist/helper';
 import ElementPlus from 'element-plus';
+import 'element-plus/dist/index.css';
+import './index.css';
 
 let app: any = null;
 

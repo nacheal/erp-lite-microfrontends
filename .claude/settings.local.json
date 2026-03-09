@@ -13,7 +13,18 @@
       "Bash(curl:*)",
       "Bash(pnpm run mock:dev:*)",
       "Bash(cat:*)",
-      "Bash(pnpm run dev:all:*)"
+      "Bash(pnpm run dev:all:*)",
+      "Bash(npx tsc:*)",
+      "Bash(cd:*)",
+      "Bash(node:*)",
+      "Bash(git config:*)",
+      "Bash(unset:*)",
+      "Bash(pnpm run dev:product:*)",
+      "Bash(kill:*)",
+      "Bash(pnpm add:*)",
+      "Bash(ps:*)",
+      "Bash(grep:*)",
+      "Bash(find:*)"
     ]
   }
 }

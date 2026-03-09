@@ -1,5 +1,5 @@
 <template>
-  <div class="app-product">
+  <div class="w-full h-full">
     <ProductList v-if="view === 'list'" />
     <ProductEdit v-else-if="view === 'edit'" />
     <CategoryManage v-else-if="view === 'category'" />
@@ -56,8 +56,4 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-.app-product {
-  width: 100%;
-  height: 100%;
-}
 </style>

@@ -1,12 +1,12 @@
 <template>
-  <div class="category-manage">
-    <div class="page-header">
+  <div class="p-6 min-h-screen bg-white">
+    <div class="flex items-center justify-between mb-6 pb-4 border-b-2 border-gray-100">
+      <h1 class="m-0 text-2xl font-semibold text-gray-900">商品分类管理</h1>
       <el-button @click="handleBack">返回列表</el-button>
-      <h1>商品分类管理</h1>
     </div>
 
-    <div class="tree-actions">
-      <el-button type="primary" @click="handleAdd">新增分类</el-button>
+    <div class="mb-4">
+      <el-button type="primary" @click="handleAdd" class="px-6 py-3 font-medium rounded-lg transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg">新增分类</el-button>
     </div>
 
     <el-table
@@ -14,7 +14,7 @@
       row-key="id"
       border
       default-expand-all
-      style="width: 100%"
+      class="rounded-lg overflow-hidden shadow-md"
     >
       <el-table-column prop="name" label="分类名称" width="200" />
       <el-table-column prop="code" label="分类编码" width="150" />
@@ -69,7 +69,7 @@
           <el-input v-model="form.code" placeholder="请输入分类编码" />
         </el-form-item>
         <el-form-item label="排序">
-          <el-input-number v-model="form.sort" :min="0" :max="999" />
+          <el-input-number v-model="form.sort" :min="0" :max="999" class="w-full" />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -238,21 +238,4 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.category-manage {
-  padding: 20px;
-}
-.page-header {
-  display: flex;
-  align-items: center;
-  margin-bottom: 20px;
-  gap: 12px;
-}
-.page-header h1 {
-  margin: 0;
-  font-size: 24px;
-  color: #333;
-}
-.tree-actions {
-  margin-bottom: 16px;
-}
 </style>

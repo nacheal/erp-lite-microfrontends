@@ -1,53 +1,53 @@
 <template>
-  <div class="stock-dashboard">
-    <div class="page-header">
+  <div class="p-6 min-h-screen bg-white">
+    <div class="flex items-center justify-between mb-6 pb-4 border-b-2 border-gray-100">
+      <h1 class="m-0 text-2xl font-semibold text-gray-900">库存看板</h1>
       <el-button @click="handleBack">返回列表</el-button>
-      <h1>库存看板</h1>
     </div>
 
     <!-- 库存统计卡片 -->
-    <div class="stock-cards">
-      <div class="stock-card stock-card-total">
-        <div class="card-icon">📦</div>
-        <div class="card-content">
-          <div class="card-label">总库存</div>
-          <div class="card-value">{{ totalStock }}</div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
+      <div class="flex items-center gap-4 p-5 bg-gradient-to-r from-purple-500 to-purple-700 rounded-lg text-white">
+        <div class="text-4xl">📦</div>
+        <div class="flex-1">
+          <div class="text-sm opacity-90 mb-2">总库存</div>
+          <div class="text-3xl font-bold">{{ totalStock }}</div>
         </div>
       </div>
-      <div class="stock-card stock-card-low">
-        <div class="card-icon">⚠️</div>
-        <div class="card-content">
-          <div class="card-label">低库存商品</div>
-          <div class="card-value">{{ lowStockCount }}</div>
+      <div class="flex items-center gap-4 p-5 bg-gradient-to-r from-pink-500 to-red-600 rounded-lg text-white">
+        <div class="text-4xl">⚠️</div>
+        <div class="flex-1">
+          <div class="text-sm opacity-90 mb-2">低库存商品</div>
+          <div class="text-3xl font-bold">{{ lowStockCount }}</div>
         </div>
       </div>
-      <div class="stock-card stock-card-value">
-        <div class="card-icon">💰</div>
-        <div class="card-content">
-          <div class="card-label">库存总值</div>
-          <div class="card-value">¥{{ totalValue.toFixed(2) }}</div>
+      <div class="flex items-center gap-4 p-5 bg-gradient-to-r from-blue-400 to-cyan-400 rounded-lg text-white">
+        <div class="text-4xl">💰</div>
+        <div class="flex-1">
+          <div class="text-sm opacity-90 mb-2">库存总值</div>
+          <div class="text-3xl font-bold">¥{{ totalValue.toFixed(2) }}</div>
         </div>
       </div>
     </div>
 
     <!-- 低库存预警列表 -->
-    <div class="low-stock-section">
-      <div class="section-header">
-        <h3>低库存预警（库存 < 100）</h3>
+    <div class="bg-white rounded-lg p-5 shadow-md">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="m-0 text-lg text-gray-900">低库存预警（库存 < 100）</h3>
         <el-button size="small" @click="loadProducts">刷新</el-button>
       </div>
       <el-table
         :data="lowStockProducts"
         v-loading="loading"
         border
-        style="width: 100%"
+        class="rounded-lg overflow-hidden"
       >
         <el-table-column prop="code" label="商品编码" width="120" />
         <el-table-column prop="name" label="商品名称" min-width="200" />
         <el-table-column prop="category" label="分类" width="120" />
         <el-table-column prop="stock" label="当前库存" width="100">
           <template #default="{ row }">
-            <span :class="{ 'stock-low': row.stock < 50, 'stock-medium': row.stock >= 50 && row.stock < 100 }">
+            <span :class="{'text-red-600 font-bold': row.stock < 50, 'text-orange-600 font-bold': row.stock >= 50 && row.stock < 100}">
               {{ row.stock }}
             </span>
           </template>
@@ -104,10 +104,11 @@
             :min="1"
             :max="adjustType === 'subtract' ? currentProduct?.stock || 0 : 9999"
             :precision="0"
+            class="w-full"
           />
         </el-form-item>
         <el-form-item label="调整类型">
-          <el-tag :type="adjustType === 'add' ? 'success' : 'warning'">
+          <el-tag :type="adjustType === 'add' ? 'success' : 'warning'" class="font-medium px-3 py-1.5 rounded">
             {{ adjustType === 'add' ? '入库' : '出库' }}
           </el-tag>
         </el-form-item>
@@ -204,79 +205,4 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.stock-dashboard {
-  padding: 20px;
-}
-.page-header {
-  display: flex;
-  align-items: center;
-  margin-bottom: 20px;
-  gap: 12px;
-}
-.page-header h1 {
-  margin: 0;
-  font-size: 24px;
-  color: #333;
-}
-.stock-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
-  margin-bottom: 30px;
-}
-.stock-card {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 8px;
-  color: white;
-}
-.stock-card.stock-card-low {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-}
-.stock-card.stock-card-value {
-  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-}
-.card-icon {
-  font-size: 40px;
-}
-.card-content {
-  flex: 1;
-}
-.card-label {
-  font-size: 14px;
-  opacity: 0.9;
-  margin-bottom: 8px;
-}
-.card-value {
-  font-size: 28px;
-  font-weight: bold;
-}
-.low-stock-section {
-  background: white;
-  border-radius: 8px;
-  padding: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
-}
-.section-header h3 {
-  margin: 0;
-  font-size: 18px;
-  color: #333;
-}
-.stock-low {
-  color: #f56c6c;
-  font-weight: bold;
-}
-.stock-medium {
-  color: #e6a23c;
-  font-weight: bold;
-}
 </style>

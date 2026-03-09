@@ -1,18 +1,19 @@
 <template>
-  <div class="product-list">
-    <div class="page-header">
-      <h1>商品管理</h1>
+  <div class="p-6 min-h-screen bg-white">
+    <div class="flex items-center justify-between mb-6 pb-4 border-b-2 border-gray-100">
+      <h1 class="m-0 text-2xl font-semibold text-gray-900">商品管理</h1>
     </div>
 
     <!-- 搜索表单 -->
-    <div class="search-form">
+    <div class="flex flex-wrap gap-4 items-center mb-6 p-5 bg-gradient-to-r from-purple-500 to-purple-700 rounded-lg shadow-lg">
       <el-input
         v-model="keyword"
         placeholder="搜索商品名称或编码"
         @keyup.enter="handleSearch"
         clearable
+        class="flex-1 min-w-[200px] max-w-[280px]"
       />
-      <el-select v-model="category" placeholder="选择分类" clearable>
+      <el-select v-model="category" placeholder="选择分类" clearable class="flex-1 min-w-[200px] max-w-[280px]">
         <el-option label="全部分类" value="" />
         <el-option
           v-for="cat in categories"
@@ -21,22 +22,22 @@
           :value="cat.code"
         />
       </el-select>
-      <el-select v-model="status" placeholder="选择状态" clearable>
+      <el-select v-model="status" placeholder="选择状态" clearable class="flex-1 min-w-[200px] max-w-[280px]">
         <el-option label="全部状态" value="" />
         <el-option label="上架" value="active" />
         <el-option label="下架" value="inactive" />
       </el-select>
-      <div class="form-actions">
+      <div class="flex gap-2 ml-auto">
         <el-button type="primary" @click="handleSearch">搜索</el-button>
         <el-button @click="handleReset">重置</el-button>
       </div>
     </div>
 
     <!-- 操作按钮 -->
-    <div class="table-actions">
-      <el-button type="primary" @click="handleAdd">新增商品</el-button>
-      <el-button @click="handleGoCategory">分类管理</el-button>
-      <el-button @click="handleGoStock">库存看板</el-button>
+    <div class="flex gap-3 mb-4">
+      <el-button type="primary" @click="handleAdd" class="px-6 py-3 font-medium rounded-lg transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg">新增商品</el-button>
+      <el-button @click="handleGoCategory" class="px-6 py-3 font-medium rounded-lg transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg">分类管理</el-button>
+      <el-button @click="handleGoStock" class="px-6 py-3 font-medium rounded-lg transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg">库存看板</el-button>
     </div>
 
     <!-- 商品表格 -->
@@ -44,7 +45,7 @@
       :data="products"
       v-loading="loading"
       border
-      style="width: 100%"
+      class="rounded-lg overflow-hidden shadow-md"
     >
       <el-table-column prop="id" label="ID" width="80" />
       <el-table-column prop="code" label="商品编码" width="120" />
@@ -58,7 +59,7 @@
       <el-table-column prop="stock" label="库存" width="100" />
       <el-table-column prop="status" label="状态" width="100">
         <template #default="{ row }">
-          <el-tag :type="getStatusType(row.status)">
+          <el-tag :type="getStatusType(row.status)" class="font-medium px-3 py-1.5 rounded">
             {{ getStatusText(row.status) }}
           </el-tag>
         </template>
@@ -84,8 +85,8 @@
     </el-table>
 
     <!-- 分页 -->
-    <div class="pagination">
-      <span class="pagination-info">共 {{ total }} 条记录，当前第 {{ page }} 页</span>
+    <div class="flex justify-between items-center mt-6 py-4">
+      <span class="text-gray-600 text-sm font-medium">共 {{ total }} 条记录，当前第 {{ page }} 页</span>
       <el-pagination
         v-model:current-page="page"
         v-model:page-size="pageSize"
@@ -94,6 +95,7 @@
         layout="prev, pager, next, sizes, jumper"
         @current-change="handlePageChange"
         @size-change="handleSizeChange"
+        class="flex items-center"
       />
     </div>
   </div>
@@ -251,40 +253,4 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.product-list {
-  padding: 20px;
-}
-.page-header {
-  margin-bottom: 20px;
-}
-.page-header h1 {
-  margin: 0;
-  font-size: 24px;
-  color: #333;
-}
-.search-form {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 20px;
-  padding: 20px;
-  background: #f5f5f5;
-  border-radius: 4px;
-}
-.search-form .el-input,
-.search-form .el-select {
-  min-width: 200px;
-}
-.table-actions {
-  margin-bottom: 16px;
-}
-.pagination {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 20px;
-}
-.pagination-info {
-  color: #666;
-  font-size: 14px;
-}
 </style>

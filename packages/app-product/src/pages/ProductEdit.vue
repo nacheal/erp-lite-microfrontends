@@ -1,8 +1,8 @@
 <template>
-  <div class="product-edit">
-    <div class="page-header">
+  <div class="p-6 min-h-screen bg-white">
+    <div class="flex items-center justify-between mb-6 pb-4 border-b-2 border-gray-100">
+      <h1 class="m-0 text-2xl font-semibold text-gray-900">{{ isEdit ? '编辑商品' : '新增商品' }}</h1>
       <el-button @click="handleBack">返回列表</el-button>
-      <h1>{{ isEdit ? '编辑商品' : '新增商品' }}</h1>
     </div>
 
     <el-form
@@ -10,7 +10,7 @@
       :model="form"
       :rules="rules"
       label-width="120px"
-      style="max-width: 800px"
+      class="max-w-4xl mx-auto p-8 bg-gradient-to-br from-gray-50 to-blue-100 rounded-xl shadow-xl"
     >
       <el-form-item label="商品编码" prop="code">
         <el-input v-model="form.code" placeholder="请输入商品编码" />
@@ -32,17 +32,17 @@
       </el-form-item>
 
       <el-form-item label="商品价格" prop="price">
-        <el-input-number v-model="form.price" :min="0" :precision="2" :step="0.01" />
+        <el-input-number v-model="form.price" :min="0" :precision="2" :step="0.01" class="w-full" />
       </el-form-item>
 
       <el-form-item label="库存数量" prop="stock">
-        <el-input-number v-model="form.stock" :min="0" :precision="0" :step="1" />
+        <el-input-number v-model="form.stock" :min="0" :precision="0" :step="1" class="w-full" />
       </el-form-item>
 
       <el-form-item label="商品状态" prop="status">
-        <el-radio-group v-model="form.status">
-          <el-radio label="active">上架</el-radio>
-          <el-radio label="inactive">下架</el-radio>
+        <el-radio-group v-model="form.status" class="flex gap-6">
+          <el-radio label="active" class="font-medium">上架</el-radio>
+          <el-radio label="inactive" class="font-medium">下架</el-radio>
         </el-radio-group>
       </el-form-item>
 
@@ -62,16 +62,17 @@
           list-type="picture-card"
           :auto-upload="false"
           :limit="5"
+          class="w-full"
         >
           <el-icon><Plus /></el-icon>
         </el-upload>
       </el-form-item>
 
       <el-form-item>
-        <el-button type="primary" @click="handleSubmit" :loading="loading">
+        <el-button type="primary" @click="handleSubmit" :loading="loading" class="px-8 py-3 font-medium rounded-lg transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg">
           {{ isEdit ? '更新' : '创建' }}
         </el-button>
-        <el-button @click="handleBack">取消</el-button>
+        <el-button @click="handleBack" class="px-8 py-3 font-medium rounded-lg transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg">取消</el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -170,18 +171,4 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.product-edit {
-  padding: 20px;
-}
-.page-header {
-  display: flex;
-  align-items: center;
-  margin-bottom: 20px;
-  gap: 12px;
-}
-.page-header h1 {
-  margin: 0;
-  font-size: 24px;
-  color: #333;
-}
 </style>

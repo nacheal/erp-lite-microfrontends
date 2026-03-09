@@ -1,6 +1,4 @@
 import type { MicroAppLifeCycles, MicroAppProps } from '@erp-lite/types';
-import { createRoot } from 'react-dom/client';
-import App from './App';
 
 let root: any = null;
 
@@ -12,9 +10,10 @@ export async function bootstrap() {
 // 每次激活时调用
 export async function mount(props: MicroAppProps) {
   console.log('[app-user] mount', props);
-  const container = props.container as HTMLElement;
-  root = createRoot(container);
-  root.render(<App />);
+  const { App } = await import('./App');
+  const { createRoot } = await import('react-dom/client');
+  root = createRoot(props.container);
+  root.render(App);
 }
 
 // 每次失活时调用
@@ -26,18 +25,8 @@ export async function unmount(props: MicroAppProps) {
   }
 }
 
-// 独立运行时不导出
 export default {
   bootstrap,
   mount,
   unmount,
 } as MicroAppLifeCycles;
-
-// 独立运行时
-if (!(window as any).__POWERED_BY_QIANKUN__) {
-  const container = document.getElementById('root') as HTMLElement;
-  if (container) {
-    root = createRoot(container);
-    root.render(<App />);
-  }
-}

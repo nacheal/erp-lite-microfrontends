@@ -6,14 +6,17 @@ const packageName = 'app-user';
 const isDev = process.env.NODE_ENV === 'development';
 
 module.exports = {
-  entry: './src/index.tsx',
+  entry: {
+    main: './src/main.tsx',      // 独立运行入口
+    index: './src/index.tsx',    // 微前端入口
+  },
 
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: 'index.js',
+    filename: 'js/[name].[contenthash:8].js',
     publicPath: 'auto',
     clean: true,
-    library: `${packageName}`,
+    library: `${packageName}-[name]`,
     libraryTarget: 'umd',
     chunkLoadingGlobal: `webpackJsonp_${packageName}`,
   },

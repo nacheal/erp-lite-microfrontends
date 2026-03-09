@@ -82,3 +82,49 @@ export async function getCategoryList(): Promise<CategoryInfo[]> {
   const response = await fetch(`${API_BASE_URL}/categories`);
   return response.json();
 }
+
+/**
+ * 创建分类
+ */
+export async function createCategory(category: Partial<CategoryInfo>): Promise<CategoryInfo> {
+  const response = await fetch(`${API_BASE_URL}/categories`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      ...category,
+      createTime: new Date().toISOString(),
+    }),
+  });
+  return response.json();
+}
+
+/**
+ * 更新分类
+ */
+export async function updateCategory(id: number, category: Partial<CategoryInfo>): Promise<CategoryInfo> {
+  const response = await fetch(`${API_BASE_URL}/categories/${id}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(category),
+  });
+  return response.json();
+}
+
+/**
+ * 删除分类
+ */
+export async function deleteCategory(id: number): Promise<void> {
+  await fetch(`${API_BASE_URL}/categories/${id}`, { method: 'DELETE' });
+}
+
+/**
+ * 调整库存
+ */
+export async function adjustStock(productId: number, adjustment: number): Promise<ProductInfo> {
+  const response = await fetch(`${API_BASE_URL}/products/${productId}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ stock: adjustment }),
+  });
+  return response.json();
+}

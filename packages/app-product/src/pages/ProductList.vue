@@ -34,7 +34,9 @@
 
     <!-- 操作按钮 -->
     <div class="table-actions">
-      <el-button type="primary">新增商品</el-button>
+      <el-button type="primary" @click="handleAdd">新增商品</el-button>
+      <el-button @click="handleGoCategory">分类管理</el-button>
+      <el-button @click="handleGoStock">库存看板</el-button>
     </div>
 
     <!-- 商品表格 -->
@@ -156,12 +158,40 @@ const handleReset = () => {
   loadProducts();
 };
 
+const handleAdd = () => {
+  window.history.pushState(null, '', '/product?view=edit');
+  // 触发自定义事件通知应用更新
+  window.dispatchEvent(new CustomEvent('subapp-navigate', {
+    detail: { url: '/product?view=edit' }
+  }));
+};
+
 const handleView = (row: ProductInfo) => {
-  console.log('查看商品', row.id);
+  window.history.pushState(null, '', `/product?view=edit&id=${row.id}`);
+  window.dispatchEvent(new CustomEvent('subapp-navigate', {
+    detail: { url: `/product?view=edit&id=${row.id}` }
+  }));
 };
 
 const handleEdit = (row: ProductInfo) => {
-  console.log('编辑商品', row.id);
+  window.history.pushState(null, '', `/product?view=edit&id=${row.id}`);
+  window.dispatchEvent(new CustomEvent('subapp-navigate', {
+    detail: { url: `/product?view=edit&id=${row.id}` }
+  }));
+};
+
+const handleGoCategory = () => {
+  window.history.pushState(null, '', '/product?view=category');
+  window.dispatchEvent(new CustomEvent('subapp-navigate', {
+    detail: { url: '/product?view=category' }
+  }));
+};
+
+const handleGoStock = () => {
+  window.history.pushState(null, '', '/product?view=stock');
+  window.dispatchEvent(new CustomEvent('subapp-navigate', {
+    detail: { url: '/product?view=stock' }
+  }));
 };
 
 const handleDelete = async (row: ProductInfo) => {

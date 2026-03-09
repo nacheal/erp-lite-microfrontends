@@ -1,9 +1,11 @@
 import type { MicroAppLifeCycles, MicroAppProps } from '@erp-lite/types';
+import * as echarts from 'echarts';
 
 let container: HTMLElement | null = null;
 let styleElement: HTMLStyleElement | null = null;
 let pollingTimer: ReturnType<typeof setInterval> | null = null;
-let charts: any[] = [];
+let trendChart: echarts.ECharts | null = null;
+let rankingChart: echarts.ECharts | null = null;
 
 export async function bootstrap() {
   console.log('[app-dashboard] bootstrap');
@@ -38,10 +40,192 @@ export async function unmount(props: MicroAppProps) {
   }
 }
 
+function disposeCharts() {
+  if (trendChart) {
+    trendChart.dispose();
+    trendChart = null;
+  }
+  if (rankingChart) {
+    rankingChart.dispose();
+    rankingChart = null;
+  }
+  window.removeEventListener('resize', handleResize);
+}
+
+function handleResize() {
+  if (trendChart) {
+    trendChart.resize();
+  }
+  if (rankingChart) {
+    rankingChart.resize();
+  }
+}
+
 function renderDashboard() {
   if (!container) return;
 
   container.innerHTML = `
+    <style>
+      .app-dashboard {
+        padding: 20px;
+      }
+      .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+      .page-header h1 {
+        margin: 0;
+        font-size: 24px;
+        color: #333;
+      }
+      .metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+      }
+      .metric-card {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 20px;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+      .metric-icon {
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+        border-radius: 12px;
+      }
+      .metric-icon-gmv {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      }
+      .metric-icon-orders {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      }
+      .metric-icon-users {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      }
+      .metric-icon-conversion {
+        background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+      }
+      .metric-info {
+        flex: 1;
+      }
+      .metric-label {
+        font-size: 14px;
+        color: #666;
+        margin-bottom: 8px;
+      }
+      .metric-value {
+        font-size: 28px;
+        font-weight: bold;
+        color: #333;
+      }
+      .metric-trend {
+        font-size: 14px;
+        margin-top: 4px;
+      }
+      .trend-up {
+        color: #52c41a;
+      }
+      .trend-down {
+        color: #ff4d4f;
+      }
+      .charts-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 20px;
+        margin-bottom: 20px;
+      }
+      .chart-card {
+        background: white;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+      .chart-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+      }
+      .chart-header h3 {
+        margin: 0;
+        font-size: 16px;
+        color: #333;
+      }
+      .chart-actions select {
+        padding: 6px 12px;
+        border: 1px solid #d9d9d9;
+        border-radius: 4px;
+        font-size: 14px;
+      }
+      .chart-container {
+        height: 300px;
+      }
+      .chart-card.chart-full {
+        grid-column: 1 / -1;
+      }
+      .chart-map-container {
+        height: 400px;
+      }
+      .btn {
+        padding: 6px 16px;
+        border: 1px solid #d9d9d9;
+        border-radius: 4px;
+        font-size: 14px;
+        cursor: pointer;
+        background: #fff;
+        transition: all 0.3s;
+      }
+      .btn:hover {
+        border-color: #1890ff;
+        color: #1890ff;
+      }
+      .province-list {
+        padding: 16px;
+      }
+      .province-list h4 {
+        margin: 0 0 16px 0;
+        font-size: 16px;
+        color: #333;
+      }
+      .province-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px;
+        margin-bottom: 12px;
+        background: #fafafa;
+        border-radius: 4px;
+      }
+      .province-name {
+        flex: 0 0 100px;
+        font-weight: 500;
+        color: #333;
+      }
+      .province-value {
+        flex: 0 0 120px;
+        text-align: right;
+        font-weight: 600;
+        color: #1890ff;
+      }
+      .province-bar {
+        flex: 1;
+        height: 8px;
+        background: linear-gradient(90deg, #1890ff 0%, #40a9ff 100%);
+        border-radius: 4px;
+        min-width: 10px;
+      }
+    </style>
     <div class="app-dashboard">
       <div class="page-header">
         <h1>数据看板</h1>
@@ -162,50 +346,108 @@ function renderCharts(data: any) {
   const rankingContainer = document.getElementById('chart-ranking');
   const mapContainer = document.getElementById('chart-map');
 
+  // 销售趋势折线图
   if (trendContainer && data.trend) {
-    trendContainer.innerHTML = `
-      <div class="simple-chart">
-        <div class="chart-title">销售趋势</div>
-        <div class="chart-data">
-          ${data.trend.map((item: any) => `
-            <div class="bar-item">
-              <div class="bar" style="height: ${(item.value / Math.max(...data.trend.map((t: any) => t.value))) * 80}%"></div>
-              <div class="bar-label">${item.date}</div>
-            </div>
-          `).join('')}
-        </div>
-      </div>
-    `;
+    if (trendChart) {
+      trendChart.dispose();
+    }
+    trendChart = echarts.init(trendContainer);
+
+    const trendOption = {
+      tooltip: {
+        trigger: 'axis',
+        formatter: '{b}<br/>销售额: ¥{c}'
+      },
+      xAxis: {
+        type: 'category',
+        data: data.trend.map((item: any) => item.date)
+      },
+      yAxis: {
+        type: 'value',
+        axisLabel: {
+          formatter: (value: number) => `¥${(value / 1000).toFixed(1)}k`
+        }
+      },
+      series: [{
+        data: data.trend.map((item: any) => item.value),
+        type: 'line',
+        smooth: true,
+        areaStyle: {
+          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+            { offset: 0, color: 'rgba(24, 144, 255, 0.3)' },
+            { offset: 1, color: 'rgba(24, 144, 255, 0.05)' }
+          ])
+        },
+        itemStyle: {
+          color: '#1890ff'
+        },
+        lineStyle: {
+          color: '#1890ff',
+          width: 2
+        }
+      }]
+    };
+
+    trendChart.setOption(trendOption);
   }
 
+  // 商品销量排行榜
   if (rankingContainer && data.ranking) {
-    rankingContainer.innerHTML = `
-      <div class="ranking-list">
-        ${data.ranking.map((item: any, index: number) => `
-          <div class="ranking-item">
-            <span class="ranking-number">${index + 1}</span>
-            <span class="ranking-name">${item.name}</span>
-            <span class="ranking-value">${item.sales}</span>
+    if (rankingChart) {
+      rankingChart.dispose();
+    }
+    rankingChart = echarts.init(rankingContainer);
+
+    const rankingOption = {
+      grid: {
+        left: '3%',
+        right: '4%',
+        bottom: '3%',
+        containLabel: true
+      },
+      xAxis: {
+        type: 'value'
+      },
+      yAxis: {
+        type: 'category',
+        data: data.ranking.map((item: any) => item.name)
+      },
+      series: [{
+        type: 'bar',
+        data: data.ranking.map((item: any) => ({
+          value: item.sales,
+          itemStyle: {
+            color: '#52c41a'
+          }
+        })),
+        label: {
+          show: true,
+          position: 'right'
+        }
+      }]
+    };
+
+    rankingChart.setOption(rankingOption);
+  }
+
+  // 省份销售热力图（简化版，暂不使用地图数据）
+  if (mapContainer && data.provinces) {
+    mapContainer.innerHTML = `
+      <div class="province-list">
+        <h4>省份销售分布</h4>
+        ${data.provinces.map((p: any) => `
+          <div class="province-item">
+            <span class="province-name">${p.name}</span>
+            <span class="province-value">¥${(p.value || 0).toFixed(2)}</span>
+            <div class="province-bar" style="width: ${(p.value / Math.max(...data.provinces.map((item: any) => item.value || 1))) * 100}%"></div>
           </div>
         `).join('')}
       </div>
     `;
   }
 
-  if (mapContainer && data.provinces) {
-    mapContainer.innerHTML = `
-      <div class="map-placeholder">
-        <p>地图图表功能需要引入 ECharts 中国地图数据</p>
-        <p>当前省份销售数据：</p>
-        ${data.provinces ? data.provinces.map((p: any) => `
-          <div class="province-item">
-            <span>${p.name}</span>
-            <span>¥${(p.value || 0).toFixed(2)}</span>
-          </div>
-        `).join('') : '<p>暂无数据</p>'}
-      </div>
-    `;
-  }
+  // 添加 resize 事件监听
+  window.addEventListener('resize', handleResize);
 }
 
 function startPolling() {
@@ -220,15 +462,6 @@ function stopPolling() {
     clearInterval(pollingTimer);
     pollingTimer = null;
   }
-}
-
-function disposeCharts() {
-  charts.forEach(chart => {
-    if (chart && typeof chart.dispose === 'function') {
-      chart.dispose();
-    }
-  });
-  charts = [];
 }
 
 if (!(window as any).__POWERED_BY_QIANKUN__) {

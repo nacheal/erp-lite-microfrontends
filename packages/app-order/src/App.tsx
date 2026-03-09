@@ -1,19 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { OrderList } from './pages/OrderList';
+import { OrderDetail } from './pages/OrderDetail';
+import { SalesStats } from './pages/SalesStats';
 
 /**
  * app-order 主应用
  * 处理子应用内部路由
  */
 const App: React.FC = () => {
-  const [view, setView] = useState<'list' | 'detail'>('list');
+  const [view, setView] = useState<'list' | 'detail' | 'stats'>('list');
 
   useEffect(() => {
     // 监听路由变化
     const handleRouteChange = () => {
       const pathname = window.location.pathname;
       const params = new URLSearchParams(window.location.search);
-      if (pathname.includes('/order/detail') || params.has('id')) {
+      const viewParam = params.get('view');
+
+      if (viewParam === 'stats') {
+        setView('stats');
+      } else if (pathname.includes('/order/detail') || params.has('id')) {
         setView('detail');
       } else {
         setView('list');
@@ -33,7 +39,9 @@ const App: React.FC = () => {
 
   return (
     <div className="app-order">
-      {view === 'list' ? <OrderList /> : <div>订单详情页（待实现）</div>}
+      {view === 'list' && <OrderList />}
+      {view === 'detail' && <OrderDetail />}
+      {view === 'stats' && <SalesStats />}
     </div>
   );
 };

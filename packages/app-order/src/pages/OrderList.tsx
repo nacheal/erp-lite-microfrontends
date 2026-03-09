@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import type { OrderInfo, OrderStatus } from '../types';
-import { getOrderList, updateOrderStatus, cancelOrder } from '../services/api';
+import { getOrderList, updateOrderStatus, cancelOrder, exportOrders } from '../services/api';
 
 /**
  * 订单列表页
@@ -79,6 +79,47 @@ export function OrderList() {
     } catch (error) {
       console.error('Failed to cancel order:', error);
     }
+  };
+
+  /**
+   * 导出订单
+   */
+  const handleExport = async () => {
+    try {
+      const blob = await exportOrders({
+        page,
+        pageSize: 1000,
+        keyword: keyword || undefined,
+        status: status || undefined,
+      });
+
+      // 创建下载链接
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `orders_${new Date().toISOString().split('T')[0]}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Failed to export orders:', error);
+      alert('导出失败');
+    }
+  };
+
+  /**
+   * 查看详情
+   */
+  const handleView = (id: number) => {
+    window.history.pushState(null, '', `/order/detail?id=${id}`);
+  };
+
+  /**
+   * 查看统计
+   */
+  const handleGoStats = () => {
+    window.history.pushState(null, '', '/order?view=stats');
   };
 
   /**
@@ -164,7 +205,12 @@ export function OrderList() {
 
       {/* 操作按钮 */}
       <div className="table-actions">
-        <button className="btn btn-primary">导出订单</button>
+        <button className="btn btn-primary" onClick={handleGoStats}>
+          销售统计
+        </button>
+        <button className="btn btn-secondary" onClick={handleExport}>
+          导出订单
+        </button>
       </div>
 
       {/* 订单表格 */}
@@ -201,7 +247,7 @@ export function OrderList() {
                 <td>{order.paymentMethod}</td>
                 <td>{formatDate(order.createTime)}</td>
                 <td>
-                  <button className="btn-link" onClick={() => console.log('查看详情', order.id)}>
+                  <button className="btn-link" onClick={() => handleView(order.id)}>
                     查看
                   </button>
                   {order.status === 'pending' && (

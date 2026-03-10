@@ -6,6 +6,8 @@ let styleElement: HTMLStyleElement | null = null;
 let pollingTimer: ReturnType<typeof setInterval> | null = null;
 let trendChart: echarts.ECharts | null = null;
 let rankingChart: echarts.ECharts | null = null;
+let isMounted = false;
+let pendingMountProps: MicroAppProps | null = null;
 
 export async function bootstrap() {
   console.log('[app-dashboard] bootstrap');
@@ -13,19 +15,62 @@ export async function bootstrap() {
 
 export async function mount(props: MicroAppProps) {
   console.log('[app-dashboard] mount', props);
-  container = props.container as HTMLElement;
 
-  if (!styleElement) {
-    styleElement = document.createElement('style');
-    document.head.appendChild(styleElement);
+  // 检查 container 是否已可用
+  if (props.container) {
+    container = props.container as HTMLElement;
+    console.log('container is available:', container);
+    isMounted = true;
+
+    if (!styleElement) {
+      styleElement = document.createElement('style');
+      document.head.appendChild(styleElement);
+    }
+
+    renderDashboard();
+    startPolling();
+  } else {
+    // 容器还未可用，保存 props 并等待
+    console.log('[app-dashboard] container not ready, waiting...');
+    pendingMountProps = props;
+
+    // 轮询等待容器可用（最多等待 5 秒）
+    let attempts = 0;
+    const maxAttempts = 50; // 50 * 100ms = 5 秒
+
+    const checkContainer = () => {
+      attempts++;
+      const el = document.getElementById('subapp-dashboard');
+      if ((el as HTMLElement) && pendingMountProps) {
+        console.log('[app-dashboard] container found after', attempts, 'attempts');
+        container = el as HTMLElement;
+        isMounted = true;
+        pendingMountProps = null;
+
+        if (!styleElement) {
+          styleElement = document.createElement('style');
+          document.head.appendChild(styleElement);
+        }
+
+        renderDashboard();
+        startPolling();
+      } else if (attempts >= maxAttempts) {
+        console.error('[app-dashboard] container not found after', maxAttempts, 'attempts');
+      } else {
+        // 继续等待
+        setTimeout(checkContainer, 100);
+      }
+    };
+
+    // 开始检查
+    checkContainer();
   }
-
-  renderDashboard();
-  startPolling();
 }
 
 export async function unmount(props: MicroAppProps) {
   console.log('[app-dashboard] unmount', props);
+  isMounted = false;
+  pendingMountProps = null;
   stopPolling();
   disposeCharts();
 
@@ -62,7 +107,10 @@ function handleResize() {
 }
 
 function renderDashboard() {
-  if (!container) return;
+  if (!container) {
+    console.error('[app-dashboard] container is null, cannot render');
+    return;
+  }
 
   container.innerHTML = `
     <style>
@@ -288,13 +336,13 @@ function renderDashboard() {
           </div>
           <div id="chart-ranking" class="chart-container"></div>
         </div>
-      </div>
 
-      <div class="chart-card chart-full">
-        <div class="chart-header">
-          <h3>省份销售热力图</h3>
+        <div class="chart-card chart-full">
+          <div class="chart-header">
+            <h3>省份销售热力图</h3>
+          </div>
+          <div id="chart-map" class="chart-container chart-map-container"></div>
         </div>
-        <div id="chart-map" class="chart-container chart-map-container"></div>
       </div>
     </div>
   `;
@@ -309,7 +357,13 @@ function renderDashboard() {
   loadDashboardData();
 }
 
-async function loadDashboardData() {
+function loadDashboardData() {
+  // 确保容器已挂载
+  if (!container || !isMounted) {
+    console.log('[app-dashboard] container not ready, skipping data load');
+    return;
+  }
+
   try {
     const response = await fetch('http://localhost:4000/dashboardStats');
     const data = await response.json();
@@ -465,5 +519,23 @@ function stopPolling() {
 }
 
 if (!(window as any).__POWERED_BY_QIANKUN__) {
-  mount({ container: document.getElementById('app') as HTMLElement } as MicroAppProps);
+  // 独立运行时，等待容器元素
+  const checkContainer = () => {
+    const appEl = document.getElementById('app');
+    if (appEl) {
+      const standaloneContainer = {
+        container: appEl as HTMLElement,
+      } as MicroAppProps;
+      mount(standaloneContainer);
+    } else {
+      setTimeout(checkContainer, 100);
+    }
+  };
+  checkContainer();
 }
+
+export default {
+  bootstrap,
+  mount,
+  unmount,
+} as MicroAppLifeCycles;

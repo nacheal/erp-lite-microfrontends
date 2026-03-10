@@ -14,7 +14,8 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'js/[name].[contenthash:8].js',
-    publicPath: 'auto',
+    // 开发环境使用完整 URL，生产环境使用相对路径
+    publicPath: isDev ? 'http://localhost:3001/' : '/app-user/',
     clean: true,
     library: `${packageName}-[name]`,
     libraryTarget: 'umd',

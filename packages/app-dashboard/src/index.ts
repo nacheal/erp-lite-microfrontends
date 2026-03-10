@@ -1,4 +1,5 @@
 import type { MicroAppLifeCycles, MicroAppProps } from '@erp-lite/types';
+import { renderWithQiankun, qiankunWindow } from 'vite-plugin-qiankun/dist/helper';
 import * as echarts from 'echarts';
 
 let container: HTMLElement | null = null;
@@ -6,86 +7,52 @@ let styleElement: HTMLStyleElement | null = null;
 let pollingTimer: ReturnType<typeof setInterval> | null = null;
 let trendChart: echarts.ECharts | null = null;
 let rankingChart: echarts.ECharts | null = null;
-let isMounted = false;
-let pendingMountProps: MicroAppProps | null = null;
 
-export async function bootstrap() {
-  console.log('[app-dashboard] bootstrap');
-}
+/**
+ * 初始化数据看板
+ */
+function initDashboard(targetContainer: HTMLElement) {
+  console.log('[app-dashboard] Initializing dashboard');
 
-export async function mount(props: MicroAppProps) {
-  console.log('[app-dashboard] mount', props);
-
-  // 检查 container 是否已可用
-  if (props.container) {
-    container = props.container as HTMLElement;
-    console.log('container is available:', container);
-    isMounted = true;
-
-    if (!styleElement) {
-      styleElement = document.createElement('style');
-      document.head.appendChild(styleElement);
-    }
-
-    renderDashboard();
-    startPolling();
-  } else {
-    // 容器还未可用，保存 props 并等待
-    console.log('[app-dashboard] container not ready, waiting...');
-    pendingMountProps = props;
-
-    // 轮询等待容器可用（最多等待 5 秒）
-    let attempts = 0;
-    const maxAttempts = 50; // 50 * 100ms = 5 秒
-
-    const checkContainer = () => {
-      attempts++;
-      const el = document.getElementById('subapp-dashboard');
-      if ((el as HTMLElement) && pendingMountProps) {
-        console.log('[app-dashboard] container found after', attempts, 'attempts');
-        container = el as HTMLElement;
-        isMounted = true;
-        pendingMountProps = null;
-
-        if (!styleElement) {
-          styleElement = document.createElement('style');
-          document.head.appendChild(styleElement);
-        }
-
-        renderDashboard();
-        startPolling();
-      } else if (attempts >= maxAttempts) {
-        console.error('[app-dashboard] container not found after', maxAttempts, 'attempts');
-      } else {
-        // 继续等待
-        setTimeout(checkContainer, 100);
-      }
-    };
-
-    // 开始检查
-    checkContainer();
-  }
-}
-
-export async function unmount(props: MicroAppProps) {
-  console.log('[app-dashboard] unmount', props);
-  isMounted = false;
-  pendingMountProps = null;
-  stopPolling();
-  disposeCharts();
-
-  if (container) {
-    container.innerHTML = '';
-    container = null;
+  // 注入样式
+  if (!styleElement) {
+    styleElement = document.createElement('style');
+    document.head.appendChild(styleElement);
   }
 
-  if (styleElement && styleElement.parentNode) {
-    styleElement.parentNode.removeChild(styleElement);
-    styleElement = null;
+  // 设置容器
+  container = targetContainer;
+
+  // 渲染 UI
+  renderDashboard();
+  loadDashboardData();
+  startPolling();
+
+  // 添加刷新按钮事件
+  const refreshBtn = document.getElementById('refresh-btn');
+  if (refreshBtn) {
+    refreshBtn.addEventListener('click', () => {
+      loadDashboardData();
+    });
   }
+
+  // 添加 resize 事件
+  window.addEventListener('resize', handleResize);
 }
 
-function disposeCharts() {
+/**
+ * 销毁数据看板
+ */
+function disposeDashboard() {
+  console.log('[app-dashboard] Disposing dashboard');
+
+  // 停止轮询
+  if (pollingTimer) {
+    clearInterval(pollingTimer);
+    pollingTimer = null;
+  }
+
+  // 销毁图表实例
   if (trendChart) {
     trendChart.dispose();
     trendChart = null;
@@ -94,9 +61,26 @@ function disposeCharts() {
     rankingChart.dispose();
     rankingChart = null;
   }
+
+  // 移除样式
+  if (styleElement && styleElement.parentNode) {
+    styleElement.parentNode.removeChild(styleElement);
+    styleElement = null;
+  }
+
+  // 移除 resize 事件
   window.removeEventListener('resize', handleResize);
+
+  // 清空容器
+  if (container) {
+    container.innerHTML = '';
+    container = null;
+  }
 }
 
+/**
+ * 处理窗口大小变化
+ */
 function handleResize() {
   if (trendChart) {
     trendChart.resize();
@@ -106,6 +90,9 @@ function handleResize() {
   }
 }
 
+/**
+ * 渲染看板 UI
+ */
 function renderDashboard() {
   if (!container) {
     console.error('[app-dashboard] container is null, cannot render');
@@ -346,35 +333,11 @@ function renderDashboard() {
       </div>
     </div>
   `;
-
-  const refreshBtn = document.getElementById('refresh-btn');
-  if (refreshBtn) {
-    refreshBtn.addEventListener('click', () => {
-      loadDashboardData();
-    });
-  }
-
-  loadDashboardData();
 }
 
-async function loadDashboardData() {
-  // 确保容器已挂载
-  if (!container || !isMounted) {
-    console.log('[app-dashboard] container not ready, skipping data load');
-    return;
-  }
-
-  try {
-    const response = await fetch('http://localhost:4000/dashboardStats');
-    const data = await response.json();
-
-    updateMetrics(data);
-    renderCharts(data);
-  } catch (error) {
-    console.error('[app-dashboard] Failed to load dashboard data:', error);
-  }
-}
-
+/**
+ * 更新指标数据
+ */
 function updateMetrics(data: any) {
   const gmvElement = document.getElementById('metric-gmv');
   const ordersElement = document.getElementById('metric-orders');
@@ -395,6 +358,9 @@ function updateMetrics(data: any) {
   }
 }
 
+/**
+ * 渲染图表
+ */
 function renderCharts(data: any) {
   const trendContainer = document.getElementById('chart-trend');
   const rankingContainer = document.getElementById('chart-ranking');
@@ -499,11 +465,26 @@ function renderCharts(data: any) {
       </div>
     `;
   }
-
-  // 添加 resize 事件监听
-  window.addEventListener('resize', handleResize);
 }
 
+/**
+ * 加载看板数据
+ */
+async function loadDashboardData() {
+  try {
+    const response = await fetch('http://localhost:4000/dashboardStats');
+    const data = await response.json();
+
+    updateMetrics(data);
+    renderCharts(data);
+  } catch (error) {
+    console.error('[app-dashboard] Failed to load dashboard data:', error);
+  }
+}
+
+/**
+ * 启动数据轮询
+ */
 function startPolling() {
   pollingTimer = setInterval(() => {
     console.log('[app-dashboard] polling data...');
@@ -511,6 +492,9 @@ function startPolling() {
   }, 60000);
 }
 
+/**
+ * 停止数据轮询
+ */
 function stopPolling() {
   if (pollingTimer) {
     clearInterval(pollingTimer);
@@ -518,24 +502,64 @@ function stopPolling() {
   }
 }
 
-if (!(window as any).__POWERED_BY_QIANKUN__) {
-  // 独立运行时，等待容器元素
-  const checkContainer = () => {
-    const appEl = document.getElementById('app');
-    if (appEl) {
-      const standaloneContainer = {
-        container: appEl as HTMLElement,
-      } as MicroAppProps;
-      mount(standaloneContainer);
+/**
+ * 使用 renderWithQiankun 包装生命周期钩子
+ */
+renderWithQiankun({
+  bootstrap() {
+    console.log('[app-dashboard] bootstrap');
+  },
+
+  mount(props: MicroAppProps) {
+    console.log('[app-dashboard] mount', props);
+
+    // 优先使用 qiankun 传入的容器
+    const targetContainer = props.container as HTMLElement;
+
+    if (targetContainer) {
+      // 容器可用，直接初始化
+      initDashboard(targetContainer);
     } else {
-      setTimeout(checkContainer, 100);
+      // 容器不可用，尝试通过 ID 查找
+      console.log('[app-dashboard] Container not provided, searching by ID...');
+      const foundContainer = document.getElementById('subapp-dashboard');
+
+      if (foundContainer) {
+        // 找到容器，初始化
+        initDashboard(foundContainer);
+      } else {
+        // 未找到容器，记录错误
+        console.error('[app-dashboard] Container #subapp-dashboard not found!');
+      }
     }
-  };
-  checkContainer();
+  },
+
+  unmount(props: MicroAppProps) {
+    console.log('[app-dashboard] unmount', props);
+    // 清理资源
+    disposeDashboard();
+  },
+
+  update(props: MicroAppProps) {
+    console.log('[app-dashboard] update', props);
+    // 可以在这里处理主应用传递的数据更新
+  },
+});
+
+/**
+ * 独立运行时直接挂载到 #app
+ */
+if (!(window as any).__POWERED_BY_QIANKUN__) {
+  const standaloneContainer = document.getElementById('app') as HTMLElement;
+  if (standaloneContainer) {
+    initDashboard(standaloneContainer);
+  }
 }
 
-export default {
-  bootstrap,
-  mount,
-  unmount,
-} as MicroAppLifeCycles;
+/**
+ * 默认导出
+ */
+export const bootstrap = renderWithQiankun.bootstrap;
+export const mount = renderWithQiankun.mount;
+export const unmount = renderWithQiankun.unmount;
+export const update = renderWithQiankun.update;

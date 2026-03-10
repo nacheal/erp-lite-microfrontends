@@ -51,7 +51,6 @@ module.exports = {
             ],
           },
         },
-      },
       {
         test: /\.css$/,
         use: [
@@ -73,7 +72,6 @@ module.exports = {
             },
           },
         },
-      },
       {
         test: /\.(png|jpg|jpeg|gif|svg)$/,
         type: 'asset/resource',
@@ -82,7 +80,6 @@ module.exports = {
         },
       },
     ],
-  },
 
   plugins: [
     new HtmlWebpackPlugin({

@@ -72,7 +72,7 @@ module.exports = {
               },
             },
           },
-        ],
+        },
       },
       {
         test: /\.(png|jpg|jpeg|gif|svg)$/,
@@ -91,7 +91,7 @@ module.exports = {
       filename: 'index.html',
       // 关键：显式指定注入 index 这个 chunk
       chunks: ['index'],
-      inject: 'body', 
+      inject: 'body',
     }),
     new MiniCssExtractPlugin({
       filename: 'css/[name].[contenthash:8].css',

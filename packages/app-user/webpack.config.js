@@ -6,6 +6,7 @@ const packageName = 'app-user';
 const isDev = process.env.NODE_ENV === 'development';
 
 module.exports = {
+  // 恢复双入口：独立运行和微前端分开
   entry: {
     main: './src/main.tsx',      // 独立运行入口
     index: './src/index.tsx',    // 微前端入口
@@ -14,12 +15,18 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'js/[name].[contenthash:8].js',
-    // 开发环境使用完整 URL，生产环境使用相对路径
     publicPath: isDev ? 'http://localhost:3001/' : '/app-user/',
     clean: true,
-    library: `${packageName}-[name]`,
+    // 为不同入口配置不同的库名称
+    library: (name: string) => {
+      if (name === 'index') {
+        return 'app-user';  // 微前端入口使用 qiankun 期望的名称
+      }
+      return `app-user-${name}`;  // 其他入口使用带前缀的名称
+    },
     libraryTarget: 'umd',
     chunkLoadingGlobal: `webpackJsonp_${packageName}`,
+    globalObject: 'window',
   },
 
   resolve: {
@@ -79,8 +86,12 @@ module.exports = {
 
   plugins: [
     new HtmlWebpackPlugin({
-      template: './public/index.html',
+      // 使用绝对路径避免找不到模板
+      template: path.resolve(__dirname, 'public/index.html'),
       filename: 'index.html',
+      // 关键：显式指定注入 index 这个 chunk
+      chunks: ['index'],
+      inject: 'body', 
     }),
     new MiniCssExtractPlugin({
       filename: 'css/[name].[contenthash:8].css',
@@ -94,6 +105,10 @@ module.exports = {
     historyApiFallback: true,
     headers: {
       'Access-Control-Allow-Origin': '*',
+    },
+    // 确保开发服务器能正确处理静态资源
+    static: {
+      directory: path.join(__dirname, 'public'),
     },
   },
 

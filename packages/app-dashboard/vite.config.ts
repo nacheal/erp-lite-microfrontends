@@ -9,6 +9,13 @@ export default defineConfig(({ mode }) => {
         useDevMode: true,
       }),
     ],
+    build: {
+      lib: {
+        entry: 'src/index.ts',
+        name: 'app-dashboard',
+        formats: ['umd', 'es'],
+      },
+    },
     server: {
       port: 3004,
       cors: true,

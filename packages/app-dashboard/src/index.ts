@@ -357,7 +357,7 @@ function renderDashboard() {
   loadDashboardData();
 }
 
-function loadDashboardData() {
+async function loadDashboardData() {
   // 确保容器已挂载
   if (!container || !isMounted) {
     console.log('[app-dashboard] container not ready, skipping data load');

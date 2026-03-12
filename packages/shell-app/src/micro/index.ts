@@ -3,6 +3,8 @@
  */
 
 import { registerMicroApps, start, initGlobalState, MicroApp } from 'qiankun';
+import { getGlobalStateActions } from '../utils/globalState';
+import { tokenManager } from '../utils/storage';
 
 /**
  * 微应用配置接口
@@ -15,6 +17,22 @@ interface MicroAppConfig {
 }
 
 /**
+ * 获取传递给子应用的 props
+ * 每次子应用加载时都会调用此函数获取最新的数据
+ */
+const getProps = () => {
+  return {
+    // 传递 qiankun 全局状态管理的 actions
+    globalState: getGlobalStateActions(),
+    // 传递用户认证信息
+    token: tokenManager.getToken(),
+    userInfo: tokenManager.getUserInfo(),
+    // 传递工具函数
+    tokenManager,
+  };
+};
+
+/**
  * 子应用配置列表
  */
 const microApps: MicroApp[] = [
@@ -23,18 +41,21 @@ const microApps: MicroApp[] = [
     entry: '//localhost:3001',
     container: '#subapp-user',
     activeRule: (location: Location) => location.pathname.startsWith('/user'),
+    props: getProps(),
   },
   {
     name: 'app-product',
     entry: '//localhost:3002',
     container: '#subapp-product',
     activeRule: (location: Location) => location.pathname.startsWith('/product'),
+    props: getProps(),
   },
   {
     name: 'app-order',
     entry: '//localhost:3003',
     container: '#subapp-order',
     activeRule: (location: Location) => location.pathname.startsWith('/order'),
+    props: getProps(),
   },
   {
     name: 'app-dashboard',
@@ -47,6 +68,7 @@ const microApps: MicroApp[] = [
       },
     ],
     activeRule: (location: Location) => location.pathname.startsWith('/dashboard'),
+    props: getProps(),
   },
 ];
 
@@ -90,8 +112,8 @@ export const registerApps = () => {
 export const startMicroApps = () => {
   start({
     sandbox: {
-      strictStyleIsolation: true, // 严格样式隔离
-      experimentalStyleIsolation: false, // 实验性样式隔离
+      strictStyleIsolation: false, // 严格样式隔离（使用 Shadow DOM，会导致 Vite HMR 错误）
+      experimentalStyleIsolation: true, // 实验性样式隔离（使用 CSS scoped，兼容性更好）
     },
     prefetch: 'all', // 预加载所有子应用
     singular: false, // 允许多个子应用同时存在

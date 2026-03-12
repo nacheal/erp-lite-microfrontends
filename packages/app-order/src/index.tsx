@@ -1,11 +1,10 @@
-// src/index.tsx
-import './public-path'; // 必须确保这个文件存在，内容见前文
+import './public-path';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import type { MicroAppLifeCycles, MicroAppProps } from '@erp-lite/types';
 import App from './App';
 import { QiankunProvider, QiankunProps } from './qiankun';
 
-console.log('here..3')
 let root: ReactDOM.Root | null = null;
 
 function render(props: QiankunProps) {
@@ -15,7 +14,7 @@ function render(props: QiankunProps) {
   if (!target) return;
 
   // 打印接收到的 props，用于调试
-  console.log('[app-user] 接收到的 props:', props);
+  console.log('[app-order] 接收到的 props:', props);
 
   root = ReactDOM.createRoot(target);
   root.render(
@@ -27,23 +26,33 @@ function render(props: QiankunProps) {
   );
 }
 
-// qiankun 声明周期
+// 应用初始化时调用一次
 export async function bootstrap() {
-  console.log('[app-user] bootstrap');
+  console.log('[app-order] bootstrap');
 }
 
-export async function mount(props: any) {
-  console.log('[app-user] mount', props);
+// 每次激活时调用
+export async function mount(props: MicroAppProps) {
+  console.log('[app-order] mount', props);
   render(props);
 }
 
-export async function unmount() {
-  console.log('[app-user] unmount');
-  root?.unmount();
-  root = null;
+// 每次失活时调用
+export async function unmount(props: MicroAppProps) {
+  console.log('[app-order] unmount', props);
+  if (root) {
+    root.unmount();
+    root = null;
+  }
 }
 
 // 独立运行
 if (!(window as any).__POWERED_BY_QIANKUN__) {
   render({});
 }
+
+export default {
+  bootstrap,
+  mount,
+  unmount,
+} as MicroAppLifeCycles;

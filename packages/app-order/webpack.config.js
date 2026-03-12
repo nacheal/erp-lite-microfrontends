@@ -8,7 +8,7 @@ const isDev = process.env.NODE_ENV === 'development';
 module.exports = {
   entry: {
     main: './src/main.tsx',
-    index: './src/index.ts', // 微前端入口
+    index: './src/index.tsx', // 微前端入口
   },
 
   output: {

@@ -29,5 +29,8 @@ export default defineConfig(({ mode }) => {
         '@': path.resolve(__dirname, 'src'),
       },
     },
+    optimizeDeps: {
+      include: ['vue', 'vue-router', 'pinia', 'element-plus'],
+    },
   };
 });

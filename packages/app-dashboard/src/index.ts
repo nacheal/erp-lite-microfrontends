@@ -7,12 +7,21 @@ let styleElement: HTMLStyleElement | null = null;
 let pollingTimer: ReturnType<typeof setInterval> | null = null;
 let trendChart: echarts.ECharts | null = null;
 let rankingChart: echarts.ECharts | null = null;
+let currentProps: MicroAppProps | null = null;
 
 /**
  * 初始化数据看板
  */
-function initDashboard(targetContainer: HTMLElement) {
-  console.log('[app-dashboard] Initializing dashboard');
+function initDashboard(targetContainer: HTMLElement, props?: MicroAppProps) {
+  console.log('[app-dashboard] Initializing dashboard', props);
+
+  // 保存 props
+  if (props) {
+    currentProps = props;
+    console.log('[app-dashboard] 接收到的 props:', props);
+    console.log('[app-dashboard] 用户信息:', (props as any).userInfo);
+    console.log('[app-dashboard] Token:', (props as any).token);
+  }
 
   // 注入样式
   if (!styleElement) {
@@ -98,6 +107,30 @@ function renderDashboard() {
     console.error('[app-dashboard] container is null, cannot render');
     return;
   }
+
+  const userInfo = (currentProps as any)?.userInfo;
+  const token = (currentProps as any)?.token;
+
+  const userInfoHtml = userInfo ? `
+    <div style="
+      padding: 16px;
+      margin-bottom: 16px;
+      background-color: #f0f2f5;
+      border-radius: 8px;
+      border: 1px solid #d9d9d9;
+    ">
+      <h3 style="margin: 0 0 12px 0; font-size: 16px; font-weight: 600;">
+        当前用户信息（来自主应用 props）
+      </h3>
+      <div style="font-size: 14px; line-height: 24px;">
+        <p style="margin: 0;"><strong>用户名：</strong>${userInfo.name}</p>
+        <p style="margin: 0;"><strong>角色：</strong>${userInfo.role}</p>
+        <p style="margin: 0;"><strong>用户ID：</strong>${userInfo.id}</p>
+        <p style="margin: 0;"><strong>权限：</strong>${userInfo.permissions?.join(', ') || '无'}</p>
+        <p style="margin: 0;"><strong>Token：</strong>${token ? `${token.substring(0, 20)}...` : '无'}</p>
+      </div>
+    </div>
+  ` : '';
 
   container.innerHTML = `
     <style>
@@ -262,6 +295,8 @@ function renderDashboard() {
       }
     </style>
     <div class="app-dashboard">
+      ${userInfoHtml}
+
       <div class="page-header">
         <h1>数据看板</h1>
         <button id="refresh-btn" class="btn btn-sm">刷新</button>
@@ -518,7 +553,7 @@ renderWithQiankun({
 
     if (targetContainer) {
       // 容器可用，直接初始化
-      initDashboard(targetContainer);
+      initDashboard(targetContainer, props);
     } else {
       // 容器不可用，尝试通过 ID 查找
       console.log('[app-dashboard] Container not provided, searching by ID...');
@@ -526,7 +561,7 @@ renderWithQiankun({
 
       if (foundContainer) {
         // 找到容器，初始化
-        initDashboard(foundContainer);
+        initDashboard(foundContainer, props);
       } else {
         // 未找到容器，记录错误
         console.error('[app-dashboard] Container #subapp-dashboard not found!');

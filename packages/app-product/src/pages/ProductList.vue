@@ -1,102 +1,128 @@
 <template>
-  <div class="p-6 min-h-screen bg-white">
-    <div class="flex items-center justify-between mb-6 pb-4 border-b-2 border-gray-100">
-      <h1 class="m-0 text-2xl font-semibold text-gray-900">商品管理</h1>
-    </div>
-
-    <!-- 搜索表单 -->
-    <div class="flex flex-wrap gap-4 items-center mb-6 p-5 bg-gradient-to-r from-purple-500 to-purple-700 rounded-lg shadow-lg">
-      <el-input
-        v-model="keyword"
-        placeholder="搜索商品名称或编码"
-        @keyup.enter="handleSearch"
-        clearable
-        class="flex-1 min-w-[200px] max-w-[280px]"
-      />
-      <el-select v-model="category" placeholder="选择分类" clearable class="flex-1 min-w-[200px] max-w-[280px]">
-        <el-option label="全部分类" value="" />
-        <el-option
-          v-for="cat in categories"
-          :key="cat.id"
-          :label="cat.name"
-          :value="cat.code"
-        />
-      </el-select>
-      <el-select v-model="status" placeholder="选择状态" clearable class="flex-1 min-w-[200px] max-w-[280px]">
-        <el-option label="全部状态" value="" />
-        <el-option label="上架" value="active" />
-        <el-option label="下架" value="inactive" />
-      </el-select>
-      <div class="flex gap-2 ml-auto">
-        <el-button type="primary" @click="handleSearch">搜索</el-button>
-        <el-button @click="handleReset">重置</el-button>
+  <div class="product-list-container">
+    <!-- 页面头部 -->
+    <div class="page-header">
+      <div class="header-content">
+        <div class="header-text">
+          <h1 class="page-title">商品管理</h1>
+          <p class="page-subtitle">管理您的商品库存和信息</p>
+        </div>
+        <div class="header-actions">
+          <button class="btn btn-primary" @click="handleAdd">
+            <span class="btn-icon">+</span>
+            新增商品
+          </button>
+          <button class="btn btn-secondary" @click="handleGoCategory">分类管理</button>
+          <button class="btn btn-secondary" @click="handleGoStock">库存看板</button>
+        </div>
       </div>
     </div>
 
-    <!-- 操作按钮 -->
-    <div class="flex gap-3 mb-4">
-      <el-button type="primary" @click="handleAdd" class="px-6 py-3 font-medium rounded-lg transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg">新增商品</el-button>
-      <el-button @click="handleGoCategory" class="px-6 py-3 font-medium rounded-lg transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg">分类管理</el-button>
-      <el-button @click="handleGoStock" class="px-6 py-3 font-medium rounded-lg transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg">库存看板</el-button>
-    </div>
+    <div class="page-content">
+      <!-- 搜索表单 -->
+      <div class="search-card">
+        <div class="search-form">
+          <div class="form-group">
+            <label class="form-label">关键词搜索</label>
+            <el-input
+              v-model="keyword"
+              placeholder="搜索商品名称或编码"
+              @keyup.enter="handleSearch"
+              clearable
+              size="large"
+            />
+          </div>
+          <div class="form-group">
+            <label class="form-label">商品分类</label>
+            <el-select v-model="category" placeholder="全部分类" clearable size="large" class="form-select">
+              <el-option label="全部分类" value="" />
+              <el-option
+                v-for="cat in categories"
+                :key="cat.id"
+                :label="cat.name"
+                :value="cat.code"
+              />
+            </el-select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">商品状态</label>
+            <el-select v-model="status" placeholder="全部状态" clearable size="large" class="form-select">
+              <el-option label="全部状态" value="" />
+              <el-option label="上架" value="active" />
+              <el-option label="下架" value="inactive" />
+            </el-select>
+          </div>
+          <div class="form-actions">
+            <button class="btn btn-search" @click="handleSearch">搜索</button>
+            <button class="btn btn-reset" @click="handleReset">重置</button>
+          </div>
+        </div>
+      </div>
 
-    <!-- 商品表格 -->
-    <el-table
-      :data="products"
-      v-loading="loading"
-      border
-      class="rounded-lg overflow-hidden shadow-md"
-    >
-      <el-table-column prop="id" label="ID" width="80" />
-      <el-table-column prop="code" label="商品编码" width="120" />
-      <el-table-column prop="name" label="商品名称" min-width="200" />
-      <el-table-column prop="category" label="分类" width="120" />
-      <el-table-column prop="price" label="价格" width="100">
-        <template #default="{ row }">
-          ¥{{ row.price.toFixed(2) }}
-        </template>
-      </el-table-column>
-      <el-table-column prop="stock" label="库存" width="100" />
-      <el-table-column prop="status" label="状态" width="100">
-        <template #default="{ row }">
-          <el-tag :type="getStatusType(row.status)" class="font-medium px-3 py-1.5 rounded">
-            {{ getStatusText(row.status) }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column prop="createTime" label="创建时间" width="180">
-        <template #default="{ row }">
-          {{ formatDate(row.createTime) }}
-        </template>
-      </el-table-column>
-      <el-table-column label="操作" width="180" fixed="right">
-        <template #default="{ row }">
-          <el-button link type="primary" @click="handleView(row)">
-            查看
-          </el-button>
-          <el-button link type="primary" @click="handleEdit(row)">
-            编辑
-          </el-button>
-          <el-button link type="danger" @click="handleDelete(row)">
-            删除
-          </el-button>
-        </template>
-      </el-table-column>
-    </el-table>
+      <!-- 商品表格 -->
+      <div class="table-card">
+        <el-table
+          :data="products"
+          v-loading="loading"
+          stripe
+          style="width: 100%"
+        >
+          <el-table-column prop="id" label="ID" width="80" align="center" />
+          <el-table-column prop="code" label="商品编码" width="140" />
+          <el-table-column prop="name" label="商品名称" min-width="200" show-overflow-tooltip />
+          <el-table-column prop="category" label="分类" width="120" />
+          <el-table-column prop="price" label="价格" width="120" align="right">
+            <template #default="{ row }">
+              <span class="price-text">¥{{ row.price.toFixed(2) }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column prop="stock" label="库存" width="100" align="center">
+            <template #default="{ row }">
+              <span :class="['stock-text', row.stock < 10 ? 'stock-low' : '']">
+                {{ row.stock }}
+              </span>
+            </template>
+          </el-table-column>
+          <el-table-column prop="status" label="状态" width="100" align="center">
+            <template #default="{ row }">
+              <el-tag :type="getStatusType(row.status)" size="small">
+                {{ getStatusText(row.status) }}
+              </el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column prop="createTime" label="创建时间" width="180">
+            <template #default="{ row }">
+              <span class="date-text">{{ formatDate(row.createTime) }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="操作" width="200" fixed="right" align="center">
+            <template #default="{ row }">
+              <div class="action-buttons">
+                <el-button link type="primary" size="small" @click="handleView(row)">查看</el-button>
+                <el-button link type="primary" size="small" @click="handleEdit(row)">编辑</el-button>
+                <el-button link type="danger" size="small" @click="handleDelete(row)">删除</el-button>
+              </div>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
 
-    <!-- 分页 -->
-    <div class="flex justify-between items-center mt-6 py-4">
-      <span class="text-gray-600 text-sm font-medium">共 {{ total }} 条记录，当前第 {{ page }} 页</span>
-      <el-pagination
-        v-model:current-page="page"
-        v-model:page-size="pageSize"
-        :page-sizes="[10, 20, 50, 100]"
-        :total="total"
-        layout="prev, pager, next, sizes, jumper"
-        @current-change="handlePageChange"
-        @size-change="handleSizeChange"
-        class="flex items-center"
-      />
+      <!-- 分页 -->
+      <div class="pagination-card">
+        <span class="pagination-info">
+          共 <span class="info-highlight">{{ total }}</span> 条记录，
+          当前第 <span class="info-highlight">{{ page }}</span> 页
+        </span>
+        <el-pagination
+          v-model:current-page="page"
+          v-model:page-size="pageSize"
+          :page-sizes="[10, 20, 50, 100]"
+          :total="total"
+          layout="prev, pager, next, sizes, jumper"
+          @current-change="handlePageChange"
+          @size-change="handleSizeChange"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -253,4 +279,281 @@ onMounted(() => {
 </script>
 
 <style scoped>
+/* 容器 */
+.product-list-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
+}
+
+/* 页面头部 */
+.page-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+  padding: 2rem 2.5rem;
+}
+
+.header-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2rem;
+}
+
+.header-text {
+  flex: 1;
+}
+
+.page-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 0.5rem 0;
+  letter-spacing: -0.5px;
+}
+
+.page-subtitle {
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.85);
+  margin: 0;
+}
+
+.header-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+/* 页面内容 */
+.page-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem 2.5rem;
+}
+
+/* 搜索卡片 */
+.search-card {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  padding: 2rem;
+  margin-bottom: 1.5rem;
+  transition: box-shadow 0.3s ease;
+}
+
+.search-card:hover {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+}
+
+.search-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+  align-items: end;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+  letter-spacing: 0.3px;
+}
+
+.form-select {
+  width: 100%;
+}
+
+.form-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+/* 按钮样式 */
+.btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.btn-secondary {
+  background: #ffffff;
+  color: #667eea;
+  border: 2px solid #667eea;
+}
+
+.btn-secondary:hover {
+  background: #667eea;
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.btn-search {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(245, 87, 108, 0.4);
+}
+
+.btn-search:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(245, 87, 108, 0.5);
+}
+
+.btn-reset {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.btn-reset:hover {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.btn-icon {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+/* 表格卡片 */
+.table-card {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+  transition: box-shadow 0.3s ease;
+}
+
+.table-card:hover {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+}
+
+/* 表格内容样式 */
+.price-text {
+  color: #f59e0b;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.stock-text {
+  color: #111827;
+  font-weight: 600;
+}
+
+.stock-low {
+  color: #ef4444;
+  font-weight: 700;
+}
+
+.date-text {
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+/* 分页卡片 */
+.pagination-card {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  padding: 1.5rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.pagination-info {
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+.info-highlight {
+  font-weight: 700;
+  color: #111827;
+  font-size: 1rem;
+}
+
+/* 响应式设计 */
+@media (max-width: 1024px) {
+  .header-content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .header-actions {
+    width: 100%;
+  }
+
+  .search-form {
+    grid-template-columns: 1fr;
+  }
+
+  .form-actions {
+    width: 100%;
+  }
+
+  .form-actions .btn {
+    flex: 1;
+  }
+}
+
+@media (max-width: 768px) {
+  .page-header {
+    padding: 1.5rem 1rem;
+  }
+
+  .page-content {
+    padding: 1.5rem 1rem;
+  }
+
+  .page-title {
+    font-size: 1.5rem;
+  }
+
+  .search-card {
+    padding: 1.5rem;
+  }
+
+  .pagination-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
 </style>

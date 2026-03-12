@@ -40,6 +40,12 @@ const microApps: MicroApp[] = [
     name: 'app-dashboard',
     entry: '//localhost:3004',
     container: '#subapp-dashboard',
+    beforeMount: [
+      app => {
+        console.log('检查容器节点是否存在:', document.querySelector('#subapp-dashboard'));
+        return Promise.resolve();
+      },
+    ],
     activeRule: (location: Location) => location.pathname.startsWith('/dashboard'),
   },
 ];
@@ -51,6 +57,7 @@ export const registerApps = () => {
   registerMicroApps(microApps, {
     beforeLoad: [
       (app) => {
+        console.log('检查容器节点是否存在:', document.querySelector('#subapp-dashboard'))
         console.log('[qiankun] Loading app...', app.name);
       },
     ],

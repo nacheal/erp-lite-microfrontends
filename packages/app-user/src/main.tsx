@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 
 let root: ReactDOM.Root | null = null;
+console.log('here..2')
 
 function render(props: any) {
   const { container } = props;
@@ -36,5 +37,12 @@ export async function unmount() {
 
 // 独立运行时
 if (!(window as any).__POWERED_BY_QIANKUN__) {
-  render({});
+  // 确保 DOM 加载完成后再渲染
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      render({});
+    });
+  } else {
+    render({});
+  }
 }

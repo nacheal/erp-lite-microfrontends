@@ -14,7 +14,7 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'js/[name].[contenthash:8].js',
-    publicPath: 'auto',
+    publicPath: isDev ? 'http://localhost:3003/' : '/',
     clean: true,
     library: `${packageName}-[name]`,
     libraryTarget: 'umd',

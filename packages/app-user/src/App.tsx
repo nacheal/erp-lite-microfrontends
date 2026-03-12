@@ -5,6 +5,7 @@ import { UserForm } from './pages/UserForm';
 import { RoleManagement } from './pages/RoleManagement';
 import { DepartmentManagement } from './pages/DepartmentManagement';
 
+console.log('here..')
 /**
  * app-user 主应用
  * 处理子应用内部路由

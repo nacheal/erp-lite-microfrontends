@@ -1,3 +1,4 @@
+import './public-path';
 import type { MicroAppLifeCycles, MicroAppProps } from '@erp-lite/types';
 
 let root: any = null;
@@ -10,10 +11,11 @@ export async function bootstrap() {
 // 每次激活时调用
 export async function mount(props: MicroAppProps) {
   console.log('[app-order] mount', props);
-  const { App } = await import('./App');
+  const React = await import('react');
+  const { default: App } = await import('./App');
   const { createRoot } = await import('react-dom/client');
   root = createRoot(props.container);
-  root.render(App);
+  root.render(React.createElement(App));
 }
 
 // 每次失活时调用

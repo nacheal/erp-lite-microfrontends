@@ -1,32 +1,43 @@
-import type { MicroAppLifeCycles, MicroAppProps } from '@erp-lite/types';
+// src/index.tsx
+import './public-path'; // 必须确保这个文件存在，内容见前文
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App';
 
-let root: any = null;
+console.log('here..3')
+let root: ReactDOM.Root | null = null;
 
-// 应用初始化时调用一次
+function render(props: any) {
+  const { container } = props;
+  const target = container ? container.querySelector('#root') : document.getElementById('root');
+  
+  if (!target) return;
+  
+  root = ReactDOM.createRoot(target);
+  root.render(
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>
+  );
+}
+
+// qiankun 声明周期
 export async function bootstrap() {
   console.log('[app-user] bootstrap');
 }
 
-// 每次激活时调用
-export async function mount(props: MicroAppProps) {
+export async function mount(props: any) {
   console.log('[app-user] mount', props);
-  const { App } = await import('./App');
-  const { createRoot } = await import('react-dom/client');
-  root = createRoot(props.container);
-  root.render(App);
+  render(props);
 }
 
-// 每次失活时调用
-export async function unmount(props: MicroAppProps) {
-  console.log('[app-user] unmount', props);
-  if (root) {
-    root.unmount();
-    root = null;
-  }
+export async function unmount() {
+  console.log('[app-user] unmount');
+  root?.unmount();
+  root = null;
 }
 
-export default {
-  bootstrap,
-  mount,
-  unmount,
-} as MicroAppLifeCycles;
+// 独立运行
+if (!(window as any).__POWERED_BY_QIANKUN__) {
+  render({});
+}

@@ -1,7 +1,7 @@
 <template>
   <div class="p-6 min-h-screen bg-white">
     <div class="flex items-center justify-between mb-6 pb-4 border-b-2 border-gray-100">
-      <h1 class="m-0 text-2xl font-semibold text-gray-900">商品分类管理</h1>
+      <h1 class="m-0 text-2xl font-semibold text-gray-900">商品分类管理1</h1>
       <el-button @click="handleBack">返回列表</el-button>
     </div>
 

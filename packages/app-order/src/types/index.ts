@@ -12,6 +12,7 @@ export type OrderStatus =
 export interface OrderInfo {
   id: number;
   orderNo: string;
+  userId?: number; // 下单用户ID（用于跨应用跳转）
   customerName: string;
   customerPhone: string;
   customerEmail?: string;

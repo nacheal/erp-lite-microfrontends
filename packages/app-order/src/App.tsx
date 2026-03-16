@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { OrderList } from './pages/OrderList';
 import { OrderDetail } from './pages/OrderDetail';
 import { SalesStats } from './pages/SalesStats';
-import { useUserInfo, useQiankunProps } from './qiankun';
+import { useUserInfo, useQiankunProps, useGlobalState } from './qiankun';
 
 /**
  * app-order 主应用
@@ -12,6 +12,7 @@ const App: React.FC = () => {
   const [view, setView] = useState<'list' | 'detail' | 'stats'>('list');
   const { userInfo, token, isAuthenticated } = useUserInfo();
   const qiankunProps = useQiankunProps();
+  const { setGlobalState } = useGlobalState();
 
   // 在控制台打印接收到的 props，用于调试
   useEffect(() => {
@@ -20,6 +21,13 @@ const App: React.FC = () => {
     console.log('[app-order] Token:', token);
     console.log('[app-order] 是否已认证:', isAuthenticated);
   }, [qiankunProps, userInfo, token, isAuthenticated]);
+
+  // 处理退出登录
+  const handleLogout = () => {
+    console.log('[app-order] 触发退出登录 action');
+    // 通过全局状态通知主应用退出登录
+    setGlobalState({ action: 'LOGOUT' });
+  };
 
   useEffect(() => {
     // 监听路由变化
@@ -59,9 +67,25 @@ const App: React.FC = () => {
           borderRadius: '8px',
           border: '1px solid #d9d9d9'
         }}>
-          <h3 style={{ margin: '0 0 12px 0', fontSize: '16px', fontWeight: 600 }}>
-            当前用户信息（来自主应用 props）
-          </h3>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+            <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 600 }}>
+              当前用户信息（来自主应用 props）
+            </h3>
+            <button
+              onClick={handleLogout}
+              style={{
+                padding: '6px 16px',
+                backgroundColor: '#ff4d4f',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                fontSize: '14px'
+              }}
+            >
+              退出登录
+            </button>
+          </div>
           <div style={{ fontSize: '14px', lineHeight: '24px' }}>
             <p style={{ margin: 0 }}><strong>用户名：</strong>{userInfo.name}</p>
             <p style={{ margin: 0 }}><strong>角色：</strong>{userInfo.role}</p>

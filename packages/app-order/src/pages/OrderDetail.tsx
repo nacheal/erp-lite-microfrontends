@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import type { OrderInfo, OrderStatus } from '../types';
 import { getOrderDetail, updateOrderStatus, cancelOrder } from '../services/api';
+import { useGlobalState } from '../qiankun';
 
 /**
  * 订单详情页
@@ -8,6 +9,7 @@ import { getOrderDetail, updateOrderStatus, cancelOrder } from '../services/api'
 export function OrderDetail() {
   const [order, setOrder] = useState<OrderInfo | null>(null);
   const [loading, setLoading] = useState(false);
+  const { setGlobalState } = useGlobalState();
 
   // 从 URL 参数获取订单 ID
   const params = new URLSearchParams(window.location.search);
@@ -104,6 +106,19 @@ export function OrderDetail() {
     window.history.pushState(null, '', '/order');
   };
 
+  /**
+   * 跨应用跳转到用户详情页
+   */
+  const handleViewUser = () => {
+    if (!order?.userId) {
+      alert('该订单没有关联用户信息');
+      return;
+    }
+    console.log('[app-order] 触发跨应用跳转到用户详情页，用户ID:', order.userId);
+    // 通过全局状态通知主应用跳转
+    window.location.href = `/user?id=${order.userId}`;
+  };
+
   useEffect(() => {
     loadOrderDetail();
   }, [orderId]);
@@ -149,7 +164,18 @@ export function OrderDetail() {
           </div>
           <div className="info-item">
             <span className="label">客户姓名：</span>
-            <span className="value">{order.customerName}</span>
+            <span className="value">
+              {order.customerName}
+              {order.userId && (
+                <button
+                  className="btn-link"
+                  onClick={handleViewUser}
+                  style={{ marginLeft: '8px' }}
+                >
+                  查看用户详情 →
+                </button>
+              )}
+            </span>
           </div>
           <div className="info-item">
             <span className="label">客户手机：</span>
@@ -447,6 +473,19 @@ export function OrderDetail() {
           padding: 40px;
           text-align: center;
           color: #999;
+        }
+        .btn-link {
+          background: none;
+          border: none;
+          color: #1890ff;
+          cursor: pointer;
+          font-size: 14px;
+          padding: 0;
+          text-decoration: none;
+        }
+        .btn-link:hover {
+          color: #40a9ff;
+          text-decoration: underline;
         }
       `}</style>
     </div>

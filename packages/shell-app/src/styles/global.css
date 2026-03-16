@@ -38,6 +38,34 @@
   --spacing-xl: 32px;
 }
 
+/* 暗色主题 */
+[data-theme='dark'] {
+  /* 品牌色（保持不变） */
+  --primary-color: #1890ff;
+  --success-color: #52c41a;
+  --warning-color: #faad14;
+  --error-color: #ff4d4f;
+
+  /* 背景色 - 暗色 */
+  --bg-primary: #141414;
+  --bg-secondary: #1f1f1f;
+  --bg-hover: #2a2a2a;
+
+  /* 文字颜色 - 暗色 */
+  --text-primary: #ffffffd9;
+  --text-secondary: #ffffffa6;
+  --text-tertiary: #ffffff73;
+
+  /* 边框颜色 - 暗色 */
+  --border-color: #434343;
+  --border-color-light: #303030;
+
+  /* 阴影 - 暗色 */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.6);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.7);
+}
+
 /* 全局样式 */
 * {
   margin: 0;

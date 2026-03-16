@@ -24,7 +24,31 @@
       "Bash(pnpm add:*)",
       "Bash(ps:*)",
       "Bash(grep:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(timeout 8 pnpm run dev:*)",
+      "Bash(git rm:*)",
+      "Bash(git restore:*)",
+      "Read(*)",
+      "Write(*)",
+      "Edit(*)",
+      "Glob(*)",
+      "Grep(*)",
+      "Bash(npm:*)",
+      "Bash(yarn:*)",
+      "Bash(ls:*)",
+      "Bash(mkdir:*)",
+      "Bash(rm:*)",
+      "Bash(mv:*)",
+      "Bash(cp:*)",
+      "Bash(chmod:*)",
+      "Bash(git status:*)",
+      "Bash(git log:*)",
+      "Bash(git diff:*)",
+      "Bash(git branch:*)",
+      "Bash(git checkout:*)",
+      "Bash(pwd:*)",
+      "Bash(which:*)",
+      "Bash(echo:*)"
     ]
   }
 }

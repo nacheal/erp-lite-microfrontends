@@ -6,6 +6,7 @@ node_modules/
 # Testing
 coverage/
 *.lcov
+test-output.*
 
 # Production builds
 dist/
@@ -25,6 +26,10 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
+npminstall-debug.log*
+build.log
+dev.log
+*.log
 
 # Editor directories and files
 .vscode/*

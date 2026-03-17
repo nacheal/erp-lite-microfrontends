@@ -2,7 +2,7 @@
   "buildCommand": "cd ../.. && pnpm --filter shell-app build",
   "outputDirectory": "dist",
   "framework": null,
-  "installCommand": "cd ../.. && pnpm install",
+  "installCommand": "cd ../.. && pnpm install --prod=false",
   "headers": [
     {
       "source": "/(.*)",

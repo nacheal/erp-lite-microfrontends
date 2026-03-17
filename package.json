@@ -9,7 +9,7 @@
     "lint:all": "pnpm --filter \"./packages/*\" --parallel lint",
     "lint:fix": "pnpm --filter \"./packages/*\" --parallel lint:fix",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,scss,md}\"",
-    "prepare": "husky install",
+    "prepare": "husky install || true",
     "mock:dev": "json-server --watch mock/db.json --middlewares mock/middleware.js -p 4000"
   },
   "devDependencies": {

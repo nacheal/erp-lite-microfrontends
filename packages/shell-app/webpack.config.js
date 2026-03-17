@@ -1,6 +1,7 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const webpack = require('webpack');
 
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -99,6 +100,13 @@ module.exports = {
     }),
     new MiniCssExtractPlugin({
       filename: 'css/[name].[contenthash:8].css',
+    }),
+    new webpack.DefinePlugin({
+      'import.meta.env.VITE_APP_USER_ENTRY': JSON.stringify(process.env.VITE_APP_USER_ENTRY),
+      'import.meta.env.VITE_APP_PRODUCT_ENTRY': JSON.stringify(process.env.VITE_APP_PRODUCT_ENTRY),
+      'import.meta.env.VITE_APP_ORDER_ENTRY': JSON.stringify(process.env.VITE_APP_ORDER_ENTRY),
+      'import.meta.env.VITE_APP_DASHBOARD_ENTRY': JSON.stringify(process.env.VITE_APP_DASHBOARD_ENTRY),
+      'import.meta.env.VITE_API_BASE_URL': JSON.stringify(process.env.VITE_API_BASE_URL),
     }),
   ],
 

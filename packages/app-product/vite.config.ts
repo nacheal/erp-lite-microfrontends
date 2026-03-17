@@ -4,13 +4,21 @@ import qiankun from 'vite-plugin-qiankun';
 import path from 'path';
 
 export default defineConfig(({ mode }) => {
+  const isDev = mode === 'development';
+  const vercelUrl = process.env.VERCEL_URL;
+
   return {
     plugins: [
       vue(),
       qiankun('app-product', {
-        useDevMode: true,
+        useDevMode: isDev,
       }),
     ],
+    base: isDev
+      ? '/'
+      : vercelUrl
+        ? `https://${vercelUrl}/`
+        : '/',
     server: {
       port: 3002,
       cors: true,
@@ -18,10 +26,10 @@ export default defineConfig(({ mode }) => {
     },
     build: {
       outDir: 'dist',
-      lib: {
-        entry: './src/index.ts',
-        name: 'app-product',
-        formats: ['umd'],
+      rollupOptions: {
+        output: {
+          manualChunks: undefined,
+        },
       },
     },
     resolve: {

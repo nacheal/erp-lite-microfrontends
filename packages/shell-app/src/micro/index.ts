@@ -17,6 +17,26 @@ interface MicroAppConfig {
 }
 
 /**
+ * 获取子应用入口地址
+ * 开发环境使用 localhost，生产环境使用环境变量配置的 URL
+ */
+const getEntry = (localPort: number, envKey: string): string => {
+  // 检查是否在 qiankun 沙箱中运行
+  if ((window as any).__POWERED_BY_QIANKUN__) {
+    return `//localhost:${localPort}`;
+  }
+
+  // 生产环境从环境变量读取
+  const prodEntry = (import.meta as any).env[envKey];
+  if (prodEntry) {
+    return prodEntry;
+  }
+
+  // 默认使用本地开发地址
+  return `//localhost:${localPort}`;
+};
+
+/**
  * 获取传递给子应用的 props
  * 每次子应用加载时都会调用此函数获取最新的数据
  */
@@ -38,28 +58,28 @@ const getProps = () => {
 const microApps: MicroApp[] = [
   {
     name: 'app-user',
-    entry: '//localhost:3001',
+    entry: getEntry(3001, 'VITE_APP_USER_ENTRY'),
     container: '#subapp-user',
     activeRule: (location: Location) => location.pathname.startsWith('/user'),
     props: getProps(),
   },
   {
     name: 'app-product',
-    entry: '//localhost:3002',
+    entry: getEntry(3002, 'VITE_APP_PRODUCT_ENTRY'),
     container: '#subapp-product',
     activeRule: (location: Location) => location.pathname.startsWith('/product'),
     props: getProps(),
   },
   {
     name: 'app-order',
-    entry: '//localhost:3003',
+    entry: getEntry(3003, 'VITE_APP_ORDER_ENTRY'),
     container: '#subapp-order',
     activeRule: (location: Location) => location.pathname.startsWith('/order'),
     props: getProps(),
   },
   {
     name: 'app-dashboard',
-    entry: '//localhost:3004',
+    entry: getEntry(3004, 'VITE_APP_DASHBOARD_ENTRY'),
     container: '#subapp-dashboard',
     beforeMount: [
       app => {

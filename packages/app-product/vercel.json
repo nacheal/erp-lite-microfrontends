@@ -1,5 +1,5 @@
 {
-  "buildCommand": "cd ../.. && pnpm --filter app-product build",
+  "buildCommand": "cd ../.. && APP_PRODUCT_URL=https://erp-lite-product.vercel.app pnpm --filter app-product build",
   "outputDirectory": "dist",
   "framework": null,
   "installCommand": "cd ../.. && pnpm install --prod=false",

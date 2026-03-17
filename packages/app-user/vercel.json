@@ -1,5 +1,5 @@
 {
-  "buildCommand": "cd ../.. && pnpm --filter app-user build",
+  "buildCommand": "cd ../.. && APP_USER_URL=https://erp-lite-user.vercel.app pnpm --filter app-user build",
   "outputDirectory": "dist",
   "framework": null,
   "installCommand": "cd ../.. && pnpm install --prod=false",

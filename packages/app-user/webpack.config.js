@@ -5,14 +5,18 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const packageName = 'app-user';
 const isDev = process.env.NODE_ENV === 'development';
 
+// 生产环境的子应用完整 URL（用于被主应用加载）
+const prodUrl = process.env.APP_USER_URL || 'https://erp-lite-user.vercel.app';
+
 module.exports = {
   entry: './src/main.tsx',  // 简化为单入口
 
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'js/[name].[contenthash:8].js',
-    // 生产环境使用根路径，开发环境使用 localhost
-    publicPath: isDev ? 'http://localhost:3001/' : '/',
+    // 开发环境：localhost
+    // 生产环境：完整 URL（用于被主应用加载）
+    publicPath: isDev ? 'http://localhost:3001/' : `${prodUrl}/`,
     clean: true,
     library: `${packageName}-[name]`,
     libraryTarget: 'umd',

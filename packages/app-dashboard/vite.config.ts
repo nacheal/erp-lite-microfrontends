@@ -4,6 +4,8 @@ import path from 'path';
 
 export default defineConfig(({ mode }) => {
   const isDev = mode === 'development';
+  // 生产环境的子应用完整 URL（用于被主应用加载）
+  const prodUrl = process.env.APP_DASHBOARD_URL || 'https://erp-lite-dashboard.vercel.app';
 
   return {
     plugins: [
@@ -11,7 +13,7 @@ export default defineConfig(({ mode }) => {
         useDevMode: isDev,
       }),
     ],
-    base: '/',
+    base: isDev ? '/' : `${prodUrl}/`,
     server: {
       port: 3004,
       cors: true,

@@ -1,5 +1,5 @@
 {
-  "buildCommand": "cd ../.. && pnpm --filter app-order build",
+  "buildCommand": "cd ../.. && APP_ORDER_URL=https://erp-lite-order.vercel.app pnpm --filter app-order build",
   "outputDirectory": "dist",
   "framework": null,
   "installCommand": "cd ../.. && pnpm install --prod=false",

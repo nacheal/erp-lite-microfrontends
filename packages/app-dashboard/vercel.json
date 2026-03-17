@@ -1,5 +1,5 @@
 {
-  "buildCommand": "cd ../.. && pnpm --filter app-dashboard build",
+  "buildCommand": "cd ../.. && APP_DASHBOARD_URL=https://erp-lite-dashboard.vercel.app pnpm --filter app-dashboard build",
   "outputDirectory": "dist",
   "framework": null,
   "installCommand": "cd ../.. && pnpm install --prod=false",

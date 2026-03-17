@@ -11,12 +11,8 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'js/[name].[contenthash:8].js',
-    // 生产环境使用 Vercel 域名，开发环境使用 localhost
-    publicPath: isDev
-      ? 'http://localhost:3001/'
-      : process.env.VERCEL_URL
-        ? `https://${process.env.VERCEL_URL}/`
-        : '/',
+    // 生产环境使用根路径，开发环境使用 localhost
+    publicPath: isDev ? 'http://localhost:3001/' : '/',
     clean: true,
     library: `${packageName}-[name]`,
     libraryTarget: 'umd',

@@ -4,7 +4,6 @@ import path from 'path';
 
 export default defineConfig(({ mode }) => {
   const isDev = mode === 'development';
-  const vercelUrl = process.env.VERCEL_URL;
 
   return {
     plugins: [
@@ -12,11 +11,7 @@ export default defineConfig(({ mode }) => {
         useDevMode: isDev,
       }),
     ],
-    base: isDev
-      ? '/'
-      : vercelUrl
-        ? `https://${vercelUrl}/`
-        : '/',
+    base: '/',
     server: {
       port: 3004,
       cors: true,
